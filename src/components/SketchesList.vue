@@ -1,0 +1,46 @@
+<script setup lang="ts">
+const entries = import.meta.glob('../glsl/*.glsl', {
+    import: 'default',
+})
+
+const keys = Object.keys(entries).map((key) => key.slice(8, -5))
+</script>
+
+<template>
+    <ul>
+        <li
+            v-for="entry in keys"
+            :key="entry"
+            :style="{ '--len': entry.length }">
+            <router-link :to="`/sketches/${entry}`">{{ entry }}</router-link>
+        </li>
+    </ul>
+</template>
+
+<style scoped>
+ul {
+    margin: 1rem 0;
+    list-style: none;
+    padding: 0;
+    font-family: monospace;
+    font-size: 1rem;
+    max-width: 20ch;
+}
+li {
+    line-height: 1.1;
+    position: relative;
+    margin-bottom: 0.2rem;
+}
+li:before {
+    content: '✦';
+    font-size: 1rem;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translate(-120%, -50%);
+}
+
+li a {
+    font-size: calc(19 / var(--len) * 1rem);
+}
+</style>
