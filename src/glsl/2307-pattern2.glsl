@@ -47,7 +47,7 @@ void main() {
     d = pow(d, 1.5);
 
     vec3 c = palette(cval) * d;
-    col += c;
+    // col += c;
   }
   {
     float i = 0.0;
@@ -82,7 +82,7 @@ void main() {
 
     vec3 c = palette(cval + .1) * d;
 
-    col += c;
+    // col += c;
   }
 
   gl_FragColor = vec4(col, 1.0);
