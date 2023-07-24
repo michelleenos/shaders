@@ -10,10 +10,10 @@ uniform float u_time;
 
 // https://iquilezles.org/articles/palettes/
 vec3 palette(float t) {
-  vec3 a = vec3(1.000, 0.618, 0.540);
-  vec3 b = vec3(-0.0, -0.5, -0.5);
-  vec3 c = vec3(2.000, 1.000, -1.5);
-  vec3 d = vec3(0.500, 0.2, -0.392);
+  vec3 a = vec3(0.5, 0.5, 0.5);
+  vec3 b = vec3(0.5, 0.5, 0.5);
+  vec3 c = vec3(1.0, 1.0, 1.0);
+  vec3 d = vec3(0.0, 0.3333, 0.6666);
 
   return a + b * cos(6.28318 * (c * t + d));
 }
@@ -49,11 +49,6 @@ void main() {
 
   uv *= PI * 6.0;
   uv -= PI * 3.;
-  // uv = uv * 2.0 - 1.0;
-  // uv -= 1.5;
-
-  vec2 ipos = floor(uv);
-  vec2 fpos = fract(uv);
 
   float g = sin(uv.x) + sin(uv.y) - u_time;
 
@@ -62,31 +57,21 @@ void main() {
   float d = length(uv);
   d = abs(d);
 
-  float val = sin(g + d * 0.1 + u_time);
+  float val = sin(g + d * 0.1 - u_time * 0.3);
 
   vec2 uv_tr = uv * PI;
-  uv_tr -= PI * offset(u_time, 0.1);
+  uv_tr += (PI * 3.0 * (cos(u_time * 0.3))) * vec2(-1.0, 1.0);
+  // circly pattern moving back & forth bw top left & bottom right
   float d0 = length(uv_tr);
 
-  val += cos(g + d0 * 0.1 + u_time);
+  val += cos(g + d0 * 0.05 + u_time * 0.1);
 
-  vec2 uv_bl = uv * PI;
-  uv_bl += PI * (cos(u_time));
-  float d1 = length(uv_bl);
+  vec2 uv_bl_tr = uv * PI;
+  uv_bl_tr += PI * 3.0 * (cos(u_time * 0.1));
+  // circly pattern moving back & forth bw top right & bottom left
+  float d1 = length(uv_bl_tr);
 
   val += sin(g - d1 * 0.1);
-
-  vec2 uv_tl = uv * PI;
-  uv_tl += vec2(PI * 3.0, -PI * 3.0);
-  float d2 = length(uv_tl);
-
-  val += sin(g + d2 * 0.1);
-
-  vec2 uv_br = uv * PI;
-  uv_br -= vec2(PI * 3.0, -PI * 3.0);
-  float d3 = length(uv_br);
-
-  val += cos(g - d3 * 0.1);
 
   val = fract(val);
   val = abs(val);

@@ -14,7 +14,6 @@ void main() {
   float r =
       abs(cos(uv.x * 0.7 + u_time * 0.3) + sin(uv.y * 0.1 + u_time * 0.5));
 
-  //   float g = abs(sin((uv.x + 0.5) * 0.2 - u_time * 0.1));
   float g = abs(cos(r * -0.8) + sin(uv.y * 0.7 + u_time * 0.2));
   g = smoothstep(0.0, 1.0, g) * 0.5;
 
