@@ -6,13 +6,15 @@ precision mediump float;
 uniform vec2 u_mouse;
 uniform vec2 u_resolution;
 uniform float u_time;
-uniform float u_intOffsetY;
-uniform float u_intOffsetX;
+uniform float u_offsetYi;
+uniform float u_offsetXi;
+uniform float u_iterations;
+uniform float u_speed;
 
 #define PI 3.14159265358979323846
 
-float lines(vec2 _st, float _width, float _num, float _smooth) {
-  _st *= _num;
+float lines(vec2 _st, float _width, float _count, float _smooth) {
+  _st *= _count;
   float edge = (1.0 - _width) / 2.0;
   float right = smoothstep(edge, edge + _smooth, fract(_st.x));
   float left = smoothstep(edge, edge + _smooth, 1.0 - fract(_st.x));
@@ -23,18 +25,25 @@ void main() {
   vec2 st = gl_FragCoord.xy / u_resolution.xy;
 
   st += vec2(0.8);
-  st *= 3.0;
+  st *= u_iterations;
 
   vec2 ipos = floor(st);
   vec2 fpos = fract(st);
 
-  float angle =
-      snoise(vec3(fpos.x, fpos.y, u_time + ipos.x * u_intOffsetX + ipos.y * u_intOffsetY)) * PI;
+  float angle = snoise(vec3(fpos.x, fpos.y,
+                            u_time * u_speed + ipos.x * u_offsetXi +
+                                ipos.y * u_offsetYi)) *
+                PI;
   st *= rotate2d(angle);
+  fpos *= rotate2d(angle);
 
-  float c = lines(st, 0.4 + ipos.y * 0.1, 2.0, 0.1);
-  float c1 = lines(st * 3.0, 0.3 + ipos.x * 0.1, 0.2, 0.1);
+  float wid1 = ipos.x / (u_iterations * 2.0);
+  float wid2 = ipos.y / (u_iterations * 2.0) * 0.5;
+  float c1 = lines(fpos, wid1, 2.0, 0.1);
+  float c2 = lines(fpos, wid2, 3.0, 0.1);
 
-  // gl_FragColor = vec4(vec3(c * 0.5, c1, c), 1.0);
-  gl_FragColor = vec4(vec3(c, c, c), 1.0);
+  // vec3 color = vec3(c1 * 0.5, c2, c1);
+
+  vec3 color = vec3(c1 * 0.5, c2, c1);
+  gl_FragColor = vec4(color, 1.0);
 }

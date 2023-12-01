@@ -8,8 +8,7 @@ const gui = new GUI()
 interface Props {
     uniforms: UniformsRenamed
 }
-const props = defineProps<Props>()
-const uniforms = props.uniforms || {}
+const { uniforms } = defineProps<Props>()
 
 const emits = defineEmits(['changeUniform'])
 
@@ -21,6 +20,7 @@ Object.keys(uniforms).forEach((key) => {
         .name(key)
         .onChange((value: number) => {
             emits('changeUniform', key, value)
+            console.log('changeUniform')
         })
 })
 

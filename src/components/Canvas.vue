@@ -32,20 +32,15 @@ watchEffect(async () => {
         sandbox.value.setUniform('u_pixelratio', Math.min(window.devicePixelRatio, 2))
         sandbox.value.load(theShader.value)
     }
-})
-
-watchEffect(async () => {
-    const sketch = route.params.sketch
-    console.log('watchEffect js')
 
     try {
         const uniformsExist = await import(`../uniforms/${sketch}.ts`)
-        // console.log(uniformsExist)
         jsFileExists.value = true
         uniforms.value = { ...uniformsExist.default }
         setAllUniforms()
     } catch (err) {
         jsFileExists.value = false
+        uniforms.value = null
     }
 })
 
@@ -70,6 +65,7 @@ const logUniforms = () => {
 
 const onChangeUniform = (key: string, value: number) => {
     if (!uniforms.value) return
+
     uniforms.value[key].value = value
     setShaderUniform(key, value)
 }

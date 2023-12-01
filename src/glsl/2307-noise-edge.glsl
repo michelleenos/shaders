@@ -137,5 +137,7 @@ void main() {
   col = mix(col, purple, r1(st, u_time * 0.5));
   col += purple * r2(st, u_time * 0.5);
 
+  col = rects(st);
+
   gl_FragColor = vec4(vec3(col), 1.0);
 }
