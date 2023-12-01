@@ -6,6 +6,8 @@ precision mediump float;
 uniform vec2 u_mouse;
 uniform vec2 u_resolution;
 uniform float u_time;
+uniform float u_intOffsetY;
+uniform float u_intOffsetX;
 
 #define PI 3.14159265358979323846
 
@@ -27,11 +29,12 @@ void main() {
   vec2 fpos = fract(st);
 
   float angle =
-      snoise(vec3(fpos.x, fpos.y, u_time + ipos.x * 0.1 + ipos.y * 0.1)) * PI;
+      snoise(vec3(fpos.x, fpos.y, u_time + ipos.x * u_intOffsetX + ipos.y * u_intOffsetY)) * PI;
   st *= rotate2d(angle);
 
   float c = lines(st, 0.4 + ipos.y * 0.1, 2.0, 0.1);
   float c1 = lines(st * 3.0, 0.3 + ipos.x * 0.1, 0.2, 0.1);
 
-  gl_FragColor = vec4(vec3(c * 0.5, c1, c), 1.0);
+  // gl_FragColor = vec4(vec3(c * 0.5, c1, c), 1.0);
+  gl_FragColor = vec4(vec3(c, c, c), 1.0);
 }

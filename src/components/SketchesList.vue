@@ -2,16 +2,14 @@
 const entries = import.meta.glob('../glsl/*.glsl', {
     import: 'default',
 })
+// entry keys look like this: "../glsl/01-whatever.glsl"
 
 const keys = Object.keys(entries).map((key) => key.slice(8, -5))
 </script>
 
 <template>
     <ul>
-        <li
-            v-for="entry in keys"
-            :key="entry"
-            :style="{ '--len': entry.length }">
+        <li v-for="entry in keys" :key="entry" :style="{ '--len': entry.length }">
             <router-link :to="`/sketches/${entry}`">{{ entry }}</router-link>
         </li>
     </ul>
