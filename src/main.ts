@@ -3,8 +3,9 @@ import './style.css'
 import App from './App.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import Canvas from './components/Canvas.vue'
+import CanvasThree from './components/CanvasThree.vue'
 
-const routes = [{ path: '/sketches/:sketch', component: Canvas, props: true }]
+const routes = [{ path: '/sketches/:sketch', component: CanvasThree, props: true }]
 
 const router = createRouter({
     history: createWebHistory(),

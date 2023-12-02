@@ -4,7 +4,9 @@ const entries = import.meta.glob('../glsl/*.glsl', {
 })
 // entry keys look like this: "../glsl/01-whatever.glsl"
 
-const keys = Object.keys(entries).map((key) => key.slice(8, -5))
+const keys = Object.keys(entries)
+    .map((key) => key.slice(8, -5))
+    .filter((key) => !key.startsWith('_'))
 </script>
 
 <template>

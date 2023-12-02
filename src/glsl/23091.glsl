@@ -50,33 +50,19 @@ void main() {
   uv *= PI * 6.0;
   uv -= PI * 3.;
 
-  float g = sin(uv.x) + sin(uv.y) - u_time;
+  float g = sin(uv.x) - sin(uv.y) - u_time * 0.5;
 
-  g = aafract(g);
-  g *= exp(-g);
-  float d = length(uv);
-  d = abs(d);
+  g = fract(g);
+  // g *= exp(-d * 0.05);
 
-  float val = sin(g + d * 0.1 - u_time * 0.3);
+  //   val += sin(g - d1 * 0.1);
 
-  vec2 uv_tr = uv * PI;
-  uv_tr += (PI * 3.0 * (cos(u_time * 0.3))) * vec2(-1.0, 1.0);
-  // circly pattern moving back & forth bw top left & bottom right
-  float d0 = length(uv_tr);
+  //   val = fract(val);
+  //   val = abs(val);
 
-  val += cos(g + d0 * 0.05 + u_time * 0.1);
-
-  vec2 uv_bl_tr = uv * PI;
-  uv_bl_tr += PI * 3.0 * (cos(u_time * 0.1));
-  // circly pattern moving back & forth bw top right & bottom left
-  float d1 = length(uv_bl_tr);
-
-  val += sin(g - d1 * 0.1);
-
-  val = fract(val);
-  val = abs(val);
-
-  vec3 col = palette(val);
+  vec3 c1 = vec3(0.2, 0.8, 1.0);
+  vec3 c2 = vec3(0.8, 0.2, 1.0);
+  vec3 col = mix(c1, c2, g);
 
   // col = mix(vec3(g), col, 0.5);
 
