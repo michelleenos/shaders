@@ -4,7 +4,13 @@ uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
 
-// #extension GL_OES_standard_derivatives : enable
+uniform float u_grid;
+uniform float u_pow;
+uniform float u_div;
+uniform float u_speed;
+uniform float u_divisions;
+uniform vec3 u_c1;
+uniform vec3 u_c2;
 
 #define PI 3.14159265358979323846
 
@@ -22,20 +28,17 @@ void main() {
   vec2 uv = (gl_FragCoord.xy) / u_resolution.xy;
   uv.x *= u_resolution.x / u_resolution.y;
 
-  uv *= PI * 6.0;
-  uv -= PI * 3.;
+  uv *= PI * u_grid;
+  uv -= PI * u_grid * 0.5;
 
-  float g = sin(uv.x) - sin(uv.y) - u_time * 0.5;
+  float g = sin(uv.x) - sin(uv.y) - u_time * u_speed;
 
-  g = fract(g);
-  g = 0.1 / g;
-  g = pow(g, 4.5);
+  g = fract(g * u_divisions);
+  g = u_div / g;
+  g = pow(g, u_pow);
+  g = min(g, 1.0);
 
-  vec3 c1 = vec3(0.2, 0.8, 1.0);
-  vec3 c2 = vec3(0.8, 0.2, 1.0);
-  vec3 col = mix(c1, c2, g);
-
-  // col = mix(vec3(g), col, 0.5);
+  vec3 col = mix(u_c1, u_c2, g);
 
   gl_FragColor = vec4(col, 1.0);
 }

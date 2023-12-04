@@ -1,3 +1,5 @@
 mat2 rotate2d(float angle) {
-  return mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+  float s = sin(angle);
+  float c = cos(angle);
+  return mat2(c, -s, s, c);
 }

@@ -1,0 +1,1 @@
+vec2 scale(vec2 st, float s) { return st * s; }
