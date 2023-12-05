@@ -5,6 +5,12 @@ export interface GUIPropNumber {
     step?: number
 }
 
+export interface GUIPropColor {
+    value: THREE.Color
+}
+
+export type GUIProp = GUIPropNumber | GUIPropColor
+
 export interface Uniforms {
-    [key: string]: GUIPropNumber
+    [key: string]: GUIProp
 }

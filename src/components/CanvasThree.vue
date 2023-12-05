@@ -2,7 +2,7 @@
 import GuiThree from './GuiThree.vue'
 import * as THREE from 'three'
 import { useRoute } from 'vue-router'
-import { ref, watch, type Ref, onMounted, onUnmounted } from 'vue'
+import { ref, type Ref, onMounted, onUnmounted, watchEffect } from 'vue'
 import { Uniforms } from '../types/types'
 
 const vertexShader = `
@@ -28,6 +28,8 @@ const animation: Ref<null | number> = ref(null)
 
 const uniforms: Ref<Uniforms | null> = ref(null)
 
+const shaderError: Ref<string | boolean> = ref(false)
+
 onMounted(() => {
     if (!canvas.value) return
 
@@ -47,8 +49,17 @@ onMounted(() => {
     renderer.value.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.value.setSize(500, 500)
 
+    renderer.value.debug.onShaderError = () => {
+        shaderError.value = true
+
+        console.warn('shader error')
+        console.log(renderer.value!.info.programs)
+    }
+
     shaderMaterial.value.uniforms.u_resolution.value.x = renderer.value.domElement.width
     shaderMaterial.value.uniforms.u_resolution.value.y = renderer.value.domElement.height
+
+    // window.renderer = renderer.value
 })
 
 onUnmounted(() => {
@@ -78,8 +89,12 @@ const cleanupUniforms = () => {
     }
 }
 
-const getShaderStuff = async () => {
+watchEffect(async () => {
     const sketch = route.params.sketch
+    console.log('blah')
+
+    theShader.value = null
+    uniforms.value = null
 
     try {
         const importedShader = await import(`../glsl/${sketch}.glsl`)
@@ -90,45 +105,51 @@ const getShaderStuff = async () => {
 
     try {
         const uniformsExist = await import(`../uniforms/${sketch}.ts`)
-        console.log(uniformsExist)
         uniforms.value = { ...uniformsExist.default }
     } catch (err) {
         uniforms.value = null
     }
 
     if (theShader.value && shaderMaterial.value) {
+        error.value = false
         shaderMaterial.value.fragmentShader = theShader.value
+        cleanupUniforms()
         setAllUniforms()
         shaderMaterial.value.needsUpdate = true
         animation.value = window.requestAnimationFrame(tick)
     }
-}
-
-watch(
-    route,
-    async () => {
-        cleanupUniforms()
-        await getShaderStuff()
-    },
-    {
-        immediate: true,
-    }
-)
+})
 
 const setAllUniforms = () => {
     if (!uniforms.value || !shaderMaterial.value) return
     let keys = Object.keys(uniforms.value)
     keys.forEach((key) => {
         if (!uniforms.value || !shaderMaterial.value) return
-        shaderMaterial.value.uniforms[key] = { value: uniforms.value[key].value }
+        if (uniforms.value[key] instanceof THREE.Color) {
+            shaderMaterial.value.uniforms[key] = { value: uniforms.value[key] }
+        } else {
+            shaderMaterial.value.uniforms[key] = { value: uniforms.value[key].value }
+        }
     })
 }
 
 const tick = () => {
     if (
+        shaderError.value ||
         !(renderer.value && camera.value && theShader.value && clock.value && shaderMaterial.value)
     ) {
         animation.value && window.cancelAnimationFrame(animation.value)
+
+        if (shaderError.value) {
+            let program =
+                renderer.value!.info &&
+                renderer.value!.info.programs &&
+                renderer.value!.info.programs[0]
+            // @ts-ignore
+            let diagnostics = program.diagnostics
+            let err = diagnostics && diagnostics.fragmentShader && diagnostics.fragmentShader.log
+            error.value = err
+        }
         return
     }
 

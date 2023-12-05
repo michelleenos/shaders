@@ -16,7 +16,7 @@
     "lil-gui": "^0.19.1",
     "three": "^0.159.0",
     "unplugin-vue-router": "^0.6.4",
-    "vite-plugin-glsl": "^1.1.2",
+    "vite-plugin-glsl": "^1.2.0",
     "vue": "^3.2.47",
     "vue-router": "4"
   },
