@@ -33,14 +33,14 @@ const uniforms: Ref<Uniforms | null> = ref(null)
 const shaderError: Ref<string | boolean> = ref(false)
 
 const sizes = {
-    x: 800,
+    x: 500,
     y: 500,
 }
 
 onMounted(() => {
     if (!canvas.value) return
 
-    camera.value = new THREE.Camera()
+    camera.value = new THREE.PerspectiveCamera(10, sizes.x / sizes.y, 0.1, 10)
     camera.value.position.z = 1
     shaderMaterial.value = new THREE.ShaderMaterial({
         vertexShader,
@@ -49,7 +49,7 @@ onMounted(() => {
             u_time: { value: 0 },
         },
     })
-    scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), shaderMaterial.value))
+    scene.add(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shaderMaterial.value))
     clock.value = new THREE.Clock()
 
     renderer.value = new THREE.WebGLRenderer({ canvas: canvas.value, antialias: true })
