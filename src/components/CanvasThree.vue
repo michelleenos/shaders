@@ -7,8 +7,10 @@ import { Uniforms } from '../types/types'
 
 const vertexShader = `
     varying vec2 vPosition;
+    varying vec2 vUv;
     void main() {
         vPosition = position.xy;
+        vUv = uv;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
     `
@@ -30,6 +32,11 @@ const uniforms: Ref<Uniforms | null> = ref(null)
 
 const shaderError: Ref<string | boolean> = ref(false)
 
+const sizes = {
+    x: 800,
+    y: 500,
+}
+
 onMounted(() => {
     if (!canvas.value) return
 
@@ -38,7 +45,7 @@ onMounted(() => {
     shaderMaterial.value = new THREE.ShaderMaterial({
         vertexShader,
         uniforms: {
-            u_resolution: { value: { x: 500, y: 500 } },
+            u_resolution: { value: { x: sizes.x, y: sizes.y } },
             u_time: { value: 0 },
         },
     })
@@ -47,7 +54,7 @@ onMounted(() => {
 
     renderer.value = new THREE.WebGLRenderer({ canvas: canvas.value, antialias: true })
     renderer.value.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.value.setSize(500, 500)
+    renderer.value.setSize(sizes.x, sizes.y)
 
     renderer.value.debug.onShaderError = () => {
         shaderError.value = true

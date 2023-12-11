@@ -1,0 +1,67 @@
+precision mediump float;
+
+uniform float u_time;
+uniform float u_smoothness;
+uniform float u_blur;
+uniform vec2 u_center;
+uniform vec2 u_resolution;
+uniform float u_blobdist;
+uniform float u_speedDiff;
+uniform float u_speedStart;
+uniform float u_innerSize;
+uniform float u_balls;
+
+varying vec2 vUv;
+
+#define PI 3.141592653589793
+
+// #include "./lygia/filter/gaussianBlur"
+#include "./lygia/math/gaussian"
+
+float circleSDF(vec2 p, float r) { return length(p) - r; }
+
+float map(float value, float inmin, float inmax, float outmin, float outmax) {
+  return (value - inmin) * (outmax - outmin) / (inmax - inmin) + outmin;
+}
+
+// polynomial smooth min
+float smin(float a, float b, float k) {
+  float h = max(k - abs(a - b), 0.0) / k;
+  return min(a, b) - h * h * k * (1.0 / 4.0);
+}
+
+float mpoint(float x, float outmin, float outmax) {
+  return map(x, -1.0, 1.0, outmin, outmax);
+}
+
+void main() {
+  vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+  uv = uv * 2.0 - 1.0;
+  uv.x *= u_resolution.x / u_resolution.y;
+
+  float d = 99.0;
+  float s1 = u_speedStart;
+  float s2 = s1 + u_speedDiff;
+  float s3 = s2 + u_speedDiff;
+  float s4 = s3 + u_speedDiff;
+  float s5 = s4 + u_speedDiff;
+  float s6 = s5 + u_speedDiff;
+
+  vec2 c = u_center;
+
+  float angle = (PI * 2.0) / u_balls;
+  for (float i = 0.0; i < u_balls; i++) {
+    float timex = u_time * (u_speedStart + (i * 1.0) * u_speedDiff);
+    float timey = u_time * (u_speedStart + (i * 2.0) * u_speedDiff);
+    float x = cos(angle * i) * u_blobdist;
+    float y = sin(angle * i) * u_blobdist;
+    vec2 p = vec2(x, y) * sin(timex) * cos(timey);
+    d = smin(d, circleSDF(uv - c - p, u_innerSize), u_smoothness);
+  }
+
+  // d = min(1.0, d);
+
+  d = 1.0 - smoothstep(0.0, u_blur, d);
+
+  gl_FragColor = vec4(vec3(d), 1.0);
+}
