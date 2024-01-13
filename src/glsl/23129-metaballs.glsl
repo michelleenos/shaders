@@ -51,11 +51,12 @@ void main() {
 
   float angle = (PI * 2.0) / u_balls;
   for (float i = 0.0; i < u_balls; i++) {
-    float timex = u_time * (u_speedStart + (i * 1.0) * u_speedDiff);
-    float timey = u_time * (u_speedStart + (i * 2.0) * u_speedDiff);
-    float x = cos(angle * i) * u_blobdist;
-    float y = sin(angle * i) * u_blobdist;
-    vec2 p = vec2(x, y) * sin(timex) * cos(timey);
+    float timex = u_time * (u_speedStart + ((u_balls - i) * 2.0) * u_speedDiff);
+    float timey = u_time * (u_speedStart + ((u_balls - i) * 2.0 + 1.0) * u_speedDiff);
+    float x = cos(angle * (i+1.0)) * u_blobdist;
+    float y = sin(angle * (i+1.0)) * u_blobdist;
+    vec2 p = vec2(x, y) * vec2(cos(timex), sin(timey));
+    // vec2 p = vec2(x, y);
     d = smin(d, circleSDF(uv - c - p, u_innerSize), u_smoothness);
   }
 

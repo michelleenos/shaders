@@ -6,7 +6,6 @@
     line-height: 1.5;
     font-weight: 400;
 
-    color-scheme: light dark;
     color: #242424;
     background-color: #f5f5f5;
 
@@ -17,14 +16,10 @@
     -webkit-text-size-adjust: 100%;
 }
 
-body {
-    box-sizing: border-box;
-}
-
 *,
 *:after,
 *:before {
-    box-sizing: inherit;
+    box-sizing: border-box;
 }
 
 a {
@@ -64,5 +59,13 @@ a.router-link-exact-active {
 body {
     margin: 0;
     min-width: 320px;
+    min-height: 100vh;
+    height: 100vh;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+    position: relative;
     min-height: 100vh;
 }

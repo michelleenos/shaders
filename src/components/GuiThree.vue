@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import GUI from 'lil-gui'
 import * as THREE from 'three'
-import { GUIPropColor, GUIProp, GUIPropVector2, Uniforms as UniformsRenamed } from '../types/types'
+import {
+    GUIPropColor,
+    GUIProp,
+    GUIPropVector2,
+    Uniforms as UniformsRenamed,
+    UniformsAndPresets as UniformsandPresetsRenamed,
+} from '../types/types'
 import { onUnmounted, onMounted } from 'vue'
 
 let gui: GUI
 interface Props {
     uniforms: UniformsRenamed
     material: THREE.ShaderMaterial
+    presets?: UniformsandPresetsRenamed['presets']
 }
 const props = defineProps<Props>()
 const emits = defineEmits(['changeUniform'])
@@ -52,6 +59,33 @@ onMounted(() => {
                     emits('changeUniform', key, value)
                 })
         }
+    }
+
+    if (props.presets) {
+        let presetsObj = { preset: '' }
+        gui.add(presetsObj, 'preset', ['', ...props.presets.map((_, i) => i)])
+            .name('Presets')
+            .onChange((value: string) => {
+                if (value === '') return
+                for (const key in props.uniforms) {
+                    const uniform = props.uniforms[key]
+                    const newSetting = props.presets![+value] ?? uniform.value
+                    if (isColorProp(uniform)) {
+                        props.material.uniforms[key].value = new THREE.Color(newSetting[key])
+                    } else if (isVec2Prop(uniform)) {
+                        props.material.uniforms[key].value = new THREE.Vector2(
+                            newSetting[key].x,
+                            newSetting[key].y
+                        )
+                    } else {
+                        props.material.uniforms[key].value = newSetting[key]
+                    }
+                }
+
+                gui.controllersRecursive().forEach((controller) => {
+                    controller.updateDisplay()
+                })
+            })
     }
 })
 

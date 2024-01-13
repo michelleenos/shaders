@@ -3,7 +3,7 @@ import GuiThree from './GuiThree.vue'
 import * as THREE from 'three'
 import { useRoute } from 'vue-router'
 import { ref, type Ref, onMounted, onUnmounted, watchEffect } from 'vue'
-import { Uniforms } from '../types/types'
+import { Uniforms, UniformsAndPresets } from '../types/types'
 
 const vertexShader = `
     varying vec2 vPosition;
@@ -29,6 +29,7 @@ const clock: Ref<THREE.Clock | null> = ref(null)
 const animation: Ref<null | number> = ref(null)
 
 const uniforms: Ref<Uniforms | null> = ref(null)
+const presets: Ref<UniformsAndPresets['presets'] | undefined> = ref(undefined)
 
 const shaderError: Ref<string | boolean> = ref(false)
 
@@ -98,7 +99,6 @@ const cleanupUniforms = () => {
 
 watchEffect(async () => {
     const sketch = route.params.sketch
-    console.log('blah')
 
     theShader.value = null
     uniforms.value = null
@@ -112,9 +112,18 @@ watchEffect(async () => {
 
     try {
         const uniformsExist = await import(`../uniforms/${sketch}.ts`)
-        uniforms.value = { ...uniformsExist.default }
+        const defaultExist = uniformsExist.default as UniformsAndPresets
+        if (defaultExist) {
+            uniforms.value = defaultExist.uniforms
+            if (defaultExist.presets) {
+                presets.value = defaultExist.presets
+            } else {
+                presets.value = undefined
+            }
+        }
     } catch (err) {
         uniforms.value = null
+        presets.value = undefined
     }
 
     if (theShader.value && shaderMaterial.value) {
@@ -130,7 +139,7 @@ watchEffect(async () => {
 const setAllUniforms = () => {
     if (!uniforms.value || !shaderMaterial.value) return
     let keys = Object.keys(uniforms.value)
-    keys.forEach((key) => {
+    keys.forEach((key: string) => {
         if (!uniforms.value || !shaderMaterial.value) return
         if (uniforms.value[key] instanceof THREE.Color) {
             shaderMaterial.value.uniforms[key] = { value: uniforms.value[key] }
@@ -174,6 +183,7 @@ const tick = () => {
             <canvas id="sandbox" width="500" height="500" ref="canvas"></canvas>
             <GuiThree
                 v-if="uniforms && shaderMaterial"
+                :presets="presets"
                 :uniforms="uniforms"
                 :material="shaderMaterial" />
         </div>

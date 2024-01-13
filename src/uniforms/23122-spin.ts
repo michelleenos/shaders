@@ -1,6 +1,6 @@
-import type { Uniforms } from '../types/types'
+import type { Uniforms, UniformsAndPresets } from '../types/types'
 
-const uniforms: Uniforms = {
+const uniforms = {
     u_duration: {
         value: 4,
         min: 0,
@@ -27,4 +27,8 @@ const uniforms: Uniforms = {
     },
 }
 
-export default uniforms
+const uniformsAndPresets: UniformsAndPresets<typeof uniforms> = {
+    uniforms,
+}
+
+export default uniformsAndPresets

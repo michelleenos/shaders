@@ -1,6 +1,6 @@
-import { Uniforms } from '../types/types'
+import { UniformsAndPresets } from '../types/types'
 
-const uniforms: Uniforms = {
+const uniforms = {
     u_outerFreq: {
         value: 9.0,
         min: 0,
@@ -63,4 +63,8 @@ const uniforms: Uniforms = {
     },
 }
 
-export default uniforms
+const uniformsAndPresets: UniformsAndPresets<keyof typeof uniforms> = {
+    uniforms,
+}
+
+export default uniformsAndPresets

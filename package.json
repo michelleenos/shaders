@@ -11,9 +11,11 @@
   "dependencies": {
     "@types/node": "^20.3.3",
     "@types/three": "^0.159.0",
+    "@vueuse/core": "^10.7.0",
     "gif.js": "^0.2.0",
     "glslCanvas": "^0.2.6",
     "lil-gui": "^0.19.1",
+    "sass": "^1.69.5",
     "three": "^0.159.0",
     "unplugin-vue-router": "^0.6.4",
     "vite-plugin-glsl": "^1.2.0",

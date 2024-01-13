@@ -1,7 +1,7 @@
-import { Uniforms } from '../types/types'
+import { UniformsAndPresets } from '../types/types'
 import * as THREE from 'three'
 
-const uniforms: Uniforms = {
+const uniforms = {
     u_grid: {
         value: 6.0,
         min: 0,
@@ -40,4 +40,8 @@ const uniforms: Uniforms = {
     },
 }
 
-export default uniforms
+const uniformsAndPresets: UniformsAndPresets = {
+    uniforms,
+}
+
+export default uniformsAndPresets

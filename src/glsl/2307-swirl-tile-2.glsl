@@ -24,16 +24,19 @@ float lines(vec2 _st, float _width, float _count, float _smooth) {
 void main() {
   vec2 st = gl_FragCoord.xy / u_resolution.xy;
 
-  st += vec2(0.8);
+  st += vec2(1.0);
   st *= u_iterations;
 
   vec2 ipos = floor(st);
   vec2 fpos = fract(st);
 
-  float angle = snoise(vec3(fpos.x, fpos.y,
-                            u_time * u_speed + ipos.x * u_offsetXi +
-                                ipos.y * u_offsetYi)) *
-                PI;
+  float noisePosZ = u_time * u_speed;
+  noisePosZ += ipos.x * u_offsetXi;
+  noisePosZ += ipos.y * u_offsetYi;
+
+  float angle = snoise( vec3(fpos.x, fpos.y, noisePosZ) );
+  angle *= PI;
+
   st *= rotate2d(angle);
   fpos *= rotate2d(angle);
 

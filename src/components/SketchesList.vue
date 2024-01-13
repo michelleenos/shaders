@@ -25,6 +25,7 @@ ul {
     font-family: monospace;
     font-size: 1rem;
     max-width: 20ch;
+    z-index: 2;
 }
 li {
     line-height: 1.1;
@@ -38,9 +39,11 @@ li:before {
     left: 0;
     top: 50%;
     transform: translate(-120%, -50%);
+    z-index: 2;
 }
 
 li a {
     font-size: calc(19 / var(--len) * 1rem);
+    z-index: 1;
 }
 </style>

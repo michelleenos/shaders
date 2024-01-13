@@ -1,59 +1,165 @@
 <script setup lang="ts">
 import SketchesList from './components/SketchesList.vue'
+import { useWindowSize } from '@vueuse/core'
+import { computed, ref, watch } from 'vue'
+
+const windowSize = useWindowSize()
+const openSidebar = ref(false)
+
+const breakpoint = 900
+
+const isDesktop = computed(() => windowSize.width.value >= breakpoint)
+
+watch(isDesktop, (newValue) => {
+    openSidebar.value = newValue
+})
+
+const toggleSidebar = () => {
+    openSidebar.value = !openSidebar.value
+}
 </script>
 
 <template>
     <div class="grid-container">
-        <div class="grid-links">
-            <SketchesList />
+        <div class="grid-topbar">
+            <button
+                class="sidebar-toggle"
+                @click="toggleSidebar"
+                aria-controls="grid-links-list"
+                :aria-expanded="`${openSidebar}`"
+                aria-label="Toggle Sidebar"></button>
         </div>
+        <transition name="slide" class="grid-links">
+            <div v-if="openSidebar">
+                <div class="grid-links-list" id="grid-links-list">
+                    <SketchesList keep-alive />
+                </div>
+            </div>
+        </transition>
         <div class="grid-canvas">
             <RouterView />
         </div>
     </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .grid-container {
-    margin: 0 auto;
-    padding: 1.5rem;
+    background: #242424;
     display: grid;
     height: 100%;
+    max-height: 100vh;
+    overflow: hidden;
     position: relative;
+    grid-template:
+        'topbar topbar' 2.5rem
+        'links canvas' 1fr / auto 1fr;
 }
 
-.grid-links {
-    grid-area: 1 / 1;
-    border-bottom: 1px solid #242424;
-    margin-bottom: 2rem;
+.grid-topbar {
+    background: #242424;
+    grid-row: 1;
+    grid-column: 1 / 3;
+    padding-left: 1rem;
 }
 
 .grid-canvas {
+    grid-row: 2;
+    grid-column: 2;
     background: #242424;
-    padding: 0.8rem;
+    align-self: start;
+    justify-self: start;
+    padding: 1.5rem;
 }
 
-@media (min-width: 800px) {
-    .grid-container {
-        grid-template-columns: minmax(auto, 220px) 1fr;
-        grid-template-rows: 100vh;
-        max-height: 100vh;
-        column-gap: 1rem;
-        overflow: hidden;
+.grid-links-list {
+    height: 100%;
+    background: #fff;
+    padding: 1.5rem;
+    margin: 0;
+    display: block;
+    overflow: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.sidebar-toggle {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    position: relative;
+    cursor: pointer;
+    color: var(--accent);
+    z-index: 4;
+
+    &:before,
+    &:after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        background: currentColor;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        transition: transform 0.2s ease;
     }
+
+    &:before {
+        transform: translate(-50%, -0.25rem);
+    }
+
+    &:after {
+        transform: translate(-50%, 0.25rem);
+    }
+
+    // close icon when open
+    &[aria-expanded='true'] {
+        &:before,
+        &:after {
+            width: 1.5rem;
+        }
+        &:before {
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+        &:after {
+            transform: translate(-50%, -50%) rotate(-45deg);
+        }
+    }
+}
+
+.slide-enter-active,
+.slide-leave-active {
+    transition: all 0.2s ease;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+    transform: translateX(-100%);
+}
+
+@media (min-width: 900px) {
     .grid-links {
-        border-right: 1px solid #242424;
-        border-bottom: none;
-        padding-right: 1rem;
-        max-height: 100%;
-        overflow: auto;
+        grid-column: 1;
+        grid-row: 1 / 3;
     }
+
+    .grid-links-list {
+        position: relative;
+        border-right: 1px solid #242424;
+        max-height: 100%;
+        border-bottom: 1px solid #242424;
+    }
+
     .grid-canvas {
         overflow: auto;
         max-height: 100%;
-        grid-area: 1 / 2;
-        justify-self: start;
-        align-self: start;
+        grid-row: 2;
+        grid-column: 2;
     }
 }
 </style>

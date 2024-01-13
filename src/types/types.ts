@@ -18,6 +18,12 @@ export interface GUIPropVector2 {
 
 export type GUIProp = GUIPropNumber | GUIPropColor | GUIPropVector2
 
-export interface Uniforms {
-    [key: string]: GUIProp
+export type Uniforms<T extends string | number = string> = {
+    [key in T]: GUIProp
 }
+export interface UniformsAndPresets<T extends string | number = string> {
+    uniforms: Uniforms<T>
+    presets?: { [key in T]?: any }[]
+}
+
+// export type Uniforms<T> = { [K in keyof T]: GUIProp }

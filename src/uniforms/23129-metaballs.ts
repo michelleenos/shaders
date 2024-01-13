@@ -1,9 +1,9 @@
-import { Uniforms } from '../types/types'
 import * as THREE from 'three'
+import { UniformsAndPresets } from '../types/types'
 
-const uniforms: Uniforms = {
+const uniforms = {
     u_smoothness: {
-        value: 0.5,
+        value: 0.45,
         min: 0,
         max: 3,
         step: 0.01,
@@ -15,41 +15,45 @@ const uniforms: Uniforms = {
         step: 0.01,
     },
     u_blobdist: {
-        value: 0.5,
+        value: 0.6,
         min: 0,
         max: 1,
         step: 0.01,
     },
     u_speedDiff: {
-        value: 0.3,
+        value: 0.08,
         min: 0,
         max: 1,
         step: 0.01,
     },
     u_speedStart: {
-        value: 1.2,
+        value: 0.5,
         min: 0,
         max: 2,
         step: 0.1,
     },
     u_innerSize: {
-        value: 0.1,
+        value: 0.15,
         min: 0,
         max: 1,
         step: 0.01,
     },
     u_blur: {
-        value: 0.1,
+        value: 0,
         min: 0,
         max: 1,
         step: 0.001,
     },
     u_balls: {
-        value: 3,
+        value: 5,
         min: 1,
         max: 10,
         step: 1,
     },
 }
 
-export default uniforms
+const uniformsAndPresets: UniformsAndPresets<keyof typeof uniforms> = {
+    uniforms,
+}
+
+export default uniformsAndPresets
