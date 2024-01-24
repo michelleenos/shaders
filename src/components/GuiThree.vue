@@ -2,11 +2,12 @@
 import GUI from 'lil-gui'
 import * as THREE from 'three'
 import {
-    GUIPropColor,
-    GUIProp,
-    GUIPropVector2,
+    UniformColor,
+    ShaderUniform,
+    UniformNumber,
+    UniformVector2,
     Uniforms as UniformsRenamed,
-    UniformsAndPresets as UniformsandPresetsRenamed,
+    ShaderInfo as ShaderInfoRenamed,
 } from '../types/types'
 import { onUnmounted, onMounted } from 'vue'
 
@@ -14,17 +15,21 @@ let gui: GUI
 interface Props {
     uniforms: UniformsRenamed
     material: THREE.ShaderMaterial
-    presets?: UniformsandPresetsRenamed['presets']
+    presets?: ShaderInfoRenamed['presets']
 }
 const props = defineProps<Props>()
 const emits = defineEmits(['changeUniform'])
 
-const isColorProp = (prop: GUIProp): prop is GUIPropColor => {
+const isColorProp = (prop: ShaderUniform): prop is UniformColor => {
     return prop.value instanceof THREE.Color
 }
 
-const isVec2Prop = (prop: GUIProp): prop is GUIPropVector2 => {
+const isVec2Prop = (prop: ShaderUniform): prop is UniformVector2 => {
     return prop.value instanceof THREE.Vector2
+}
+
+const isNumberProp = (prop: ShaderUniform): prop is UniformNumber => {
+    return typeof prop.value === 'number'
 }
 
 onMounted(() => {
@@ -36,7 +41,6 @@ onMounted(() => {
             gui.addColor(props.material.uniforms[key], 'value')
                 .name(key)
                 .onChange((value: string) => {
-                    // emits('changeUniform', key, value)
                     props.material.uniforms[key].value = new THREE.Color(value)
                 })
         } else if (isVec2Prop(uniform)) {
@@ -51,11 +55,17 @@ onMounted(() => {
                 .onChange((value: number) => {
                     emits('changeUniform', key, value)
                 })
-        } else {
+        } else if (isNumberProp(uniform)) {
             const { min = 0, max = 1, step = 0.01 } = uniform
             gui.add(props.material.uniforms[key], 'value', min, max, step)
                 .name(key)
                 .onChange((value: number) => {
+                    emits('changeUniform', key, value)
+                })
+        } else {
+            gui.add(props.material.uniforms[key], 'value')
+                .name(key)
+                .onChange((value: boolean) => {
                     emits('changeUniform', key, value)
                 })
         }

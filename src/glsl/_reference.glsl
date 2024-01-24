@@ -43,8 +43,7 @@ float outlineRect(vec2 _st, float _width, vec2 _size) {
 // but less expensive than functions depending on sqrt (ie distance)
 float circle_dot(in vec2 _st, in float _radius) {
   vec2 dist = _st - vec2(0.5);
-  return 1. - smoothstep(_radius - (_radius * 0.01), _radius + (_radius * 0.01),
-                         dot(dist, dist) * 4.0);
+  return 1. - smoothstep(_radius - (_radius * 0.01), _radius + (_radius * 0.01), dot(dist, dist) * 4.0);
 }
 
 float circle(vec2 _st, float _radius, float _smooth) {
@@ -75,9 +74,13 @@ float lines(vec2 _st, float _width, float _num, float _smooth) {
   return left * right;
 }
 
-float simpletri(vec2 _st) { return step(_st.x, _st.y); }
+float simpletri(vec2 _st) {
+  return step(_st.x, _st.y);
+}
 
-float isodd(float _num) { return step(1.0, mod(_num, 2.0)); }
+float isodd(float _num) {
+  return step(1.0, mod(_num, 2.0));
+}
 
 //////////////////////////////////////////////////////////////////////
 
@@ -87,14 +90,16 @@ float random(vec2 _st) {
 }
 
 // https://thebookofshaders.com/10/
-float random(in float x) { return fract(sin(x) * 1e4); }
+float random(in float x) {
+  return fract(sin(x) * 1e4);
+}
 
 // https://thebookofshaders.com/edit.php#11/2d-vnoise.frag
 float random2(vec2 st) {
   st = vec2(dot(st, vec2(127.1, 311.7)), dot(st, vec2(269.5, 183.3)));
 
   return -1.0 +
-         2.0 * fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
+    2.0 * fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
 
 // https://thebookofshaders.com/edit.php#11/iching-03.frag
@@ -128,9 +133,7 @@ float noise(vec2 st) {
   vec2 f = fract(st);
   vec2 u = f * f * (3.0 - 2.0 * f);
 
-  return mix(mix(random2(i + vec2(0.0, 0.0)), random2(i + vec2(1.0, 0.0)), u.x),
-             mix(random2(i + vec2(0.0, 1.0)), random2(i + vec2(1.0, 1.0)), u.x),
-             u.y);
+  return mix(mix(random2(i + vec2(0.0, 0.0)), random2(i + vec2(1.0, 0.0)), u.x), mix(random2(i + vec2(0.0, 1.0)), random2(i + vec2(1.0, 1.0)), u.x), u.y);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -148,11 +151,7 @@ float gnoise(vec2 st) {
 
   vec2 u = f * f * (3.0 - 2.0 * f);
 
-  return mix(mix(dot(random2_v2(i + vec2(0.0, 0.0)), f - vec2(0.0, 0.0)),
-                 dot(random2_v2(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0)), u.x),
-             mix(dot(random2_v2(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0)),
-                 dot(random2_v2(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0)), u.x),
-             u.y);
+  return mix(mix(dot(random2_v2(i + vec2(0.0, 0.0)), f - vec2(0.0, 0.0)), dot(random2_v2(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0)), u.x), mix(dot(random2_v2(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0)), dot(random2_v2(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0)), u.x), u.y);
 }
 
 //////////////////////////////////////////////////////////////////////

@@ -1,4 +1,4 @@
-import { UniformsAndPresets } from '../types/types'
+import { ShaderInfo } from '../types/types'
 import * as THREE from 'three'
 
 const uniforms = {
@@ -40,8 +40,8 @@ const uniforms = {
     },
 }
 
-const uniformsAndPresets: UniformsAndPresets = {
+const ShaderInfo: ShaderInfo = {
     uniforms,
 }
 
-export default uniformsAndPresets
+export default ShaderInfo

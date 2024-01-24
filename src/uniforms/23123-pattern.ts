@@ -1,16 +1,16 @@
-import { GUIProp, UniformsAndPresets, GUIPropColor, GUIPropNumber, Uniforms } from '../types/types'
+import { UniformNumber, ShaderInfo } from '../types/types'
 
 interface Uniforms23123 {
-    u_speedColor: GUIPropNumber
-    u_speedLines: GUIPropNumber
-    u_fractAmt: GUIPropNumber
-    u_multCos: GUIPropNumber
-    u_multSin: GUIPropNumber
-    u_divBy: GUIPropNumber
-    u_divTop: GUIPropNumber
-    u_pow: GUIPropNumber
-    u_doFractAtEnd: GUIPropNumber
-    u_doMinAbsAtEnd: GUIPropNumber
+    u_speedColor: UniformNumber
+    u_speedLines: UniformNumber
+    u_fractAmt: UniformNumber
+    u_multCos: UniformNumber
+    u_multSin: UniformNumber
+    u_divBy: UniformNumber
+    u_divTop: UniformNumber
+    u_pow: UniformNumber
+    u_doFractAtEnd: UniformNumber
+    u_doMinAbsAtEnd: UniformNumber
 }
 
 const uniforms: Uniforms23123 = {
@@ -76,7 +76,7 @@ const uniforms: Uniforms23123 = {
     },
 }
 
-const uniformsAndPresets: UniformsAndPresets<keyof typeof uniforms> = {
+const ShaderInfo: ShaderInfo<keyof typeof uniforms> = {
     uniforms,
     presets: [
         {
@@ -106,4 +106,4 @@ const uniformsAndPresets: UniformsAndPresets<keyof typeof uniforms> = {
     ],
 }
 
-export default uniformsAndPresets
+export default ShaderInfo

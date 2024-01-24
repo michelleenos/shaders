@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { UniformsAndPresets } from '../types/types'
+import { ShaderInfo } from '../types/types'
 
 const uniforms = {
     u_smoothness: {
@@ -52,8 +52,8 @@ const uniforms = {
     },
 }
 
-const uniformsAndPresets: UniformsAndPresets<keyof typeof uniforms> = {
+const ShaderInfo: ShaderInfo<keyof typeof uniforms> = {
     uniforms,
 }
 
-export default uniformsAndPresets
+export default ShaderInfo

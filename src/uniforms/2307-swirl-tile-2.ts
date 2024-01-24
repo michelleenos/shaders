@@ -1,4 +1,4 @@
-import { UniformsAndPresets } from '../types/types'
+import { ShaderInfo } from '../types/types'
 
 const uniforms = {
     u_offsetXi: {
@@ -27,8 +27,8 @@ const uniforms = {
     },
 }
 
-const uniformsAndPresets: UniformsAndPresets<keyof typeof uniforms> = {
+const ShaderInfo: ShaderInfo<keyof typeof uniforms> = {
     uniforms,
 }
 
-export default uniformsAndPresets
+export default ShaderInfo

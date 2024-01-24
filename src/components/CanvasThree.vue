@@ -3,7 +3,7 @@ import GuiThree from './GuiThree.vue'
 import * as THREE from 'three'
 import { useRoute } from 'vue-router'
 import { ref, type Ref, onMounted, onUnmounted, watchEffect } from 'vue'
-import { Uniforms, UniformsAndPresets } from '../types/types'
+import { Uniforms, ShaderInfo } from '../types/types'
 
 const vertexShader = `
     varying vec2 vPosition;
@@ -23,13 +23,15 @@ const error: Ref<null | unknown> = ref(null)
 const canvas: Ref<HTMLCanvasElement | null> = ref(null)
 const renderer: Ref<THREE.WebGLRenderer | null> = ref(null)
 const camera: Ref<THREE.Camera | null> = ref(null)
+const loader = new THREE.TextureLoader()
 const scene = new THREE.Scene()
 const shaderMaterial: Ref<THREE.ShaderMaterial | null> = ref(null)
 const clock: Ref<THREE.Clock | null> = ref(null)
 const animation: Ref<null | number> = ref(null)
 
 const uniforms: Ref<Uniforms | null> = ref(null)
-const presets: Ref<UniformsAndPresets['presets'] | undefined> = ref(undefined)
+const presets: Ref<ShaderInfo['presets'] | undefined> = ref(undefined)
+const textures: Ref<ShaderInfo['textures'] | undefined> = ref(undefined)
 
 const shaderError: Ref<string | boolean> = ref(false)
 
@@ -73,7 +75,6 @@ onMounted(() => {
 onUnmounted(() => {
     animation.value && window.cancelAnimationFrame(animation.value)
     if (renderer.value) renderer.value.dispose()
-    // if (shaderMaterial.value) shaderMaterial.value.dispose()
 
     scene.traverse((child) => {
         if (child instanceof THREE.Mesh) {
@@ -112,7 +113,7 @@ watchEffect(async () => {
 
     try {
         const uniformsExist = await import(`../uniforms/${sketch}.ts`)
-        const defaultExist = uniformsExist.default as UniformsAndPresets
+        const defaultExist = uniformsExist.default as ShaderInfo
         if (defaultExist) {
             uniforms.value = defaultExist.uniforms
             if (defaultExist.presets) {
@@ -120,6 +121,8 @@ watchEffect(async () => {
             } else {
                 presets.value = undefined
             }
+
+            textures.value = defaultExist.textures ?? undefined
         }
     } catch (err) {
         uniforms.value = null
@@ -131,10 +134,22 @@ watchEffect(async () => {
         shaderMaterial.value.fragmentShader = theShader.value
         cleanupUniforms()
         setAllUniforms()
+        setTextures()
         shaderMaterial.value.needsUpdate = true
         animation.value = window.requestAnimationFrame(tick)
     }
 })
+
+const setTextures = () => {
+    if (!textures.value || !shaderMaterial.value) return
+    let texturesKeys = Object.keys(textures.value)
+    texturesKeys.forEach((key: string) => {
+        let texture = textures.value![key]
+        let path = texture.path
+        let tex = loader.load(path)
+        shaderMaterial.value!.uniforms[key] = { value: tex }
+    })
+}
 
 const setAllUniforms = () => {
     if (!uniforms.value || !shaderMaterial.value) return
