@@ -91,9 +91,27 @@ const uniforms = {
     },
 }
 
-const ShaderInfo: ShaderInfo = {
+const ShaderInfo: ShaderInfo<keyof typeof uniforms> = {
     uniforms,
     textures,
+    presets: [
+        {
+            u_iterations: 9,
+            u_rotation1: 8.3,
+            u_rotation2: 2,
+            u_zval: 1.6,
+            u_qmult: 1.4,
+            u_quvx: -5.65,
+            u_quvy: 9.47,
+            u_wavey: 0,
+            u_wavex: 0,
+            u_multd: 3,
+            u_extrarotation: false,
+            u_rValStart: -1.2,
+            u_gValStart: -0.61,
+            u_bValStart: 0.93,
+        },
+    ],
 }
 
 export default ShaderInfo

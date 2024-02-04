@@ -38,7 +38,13 @@ const uniforms = {
         max: 1,
         step: 0.01,
     },
-    u_blur: {
+    u_blurStart: {
+        value: 0,
+        min: 0,
+        max: 1,
+        step: 0.001,
+    },
+    u_blurEnd: {
         value: 0,
         min: 0,
         max: 1,
@@ -49,6 +55,12 @@ const uniforms = {
         min: 1,
         max: 10,
         step: 1,
+    },
+    u_blurPow: {
+        value: 2,
+        min: 0,
+        max: 5,
+        step: 0.1,
     },
 }
 
