@@ -40,8 +40,8 @@ const uniforms = {
     },
 }
 
-const ShaderInfo: ShaderInfo = {
+const shaderInfo: ShaderInfo = {
     uniforms,
 }
 
-export default ShaderInfo
+export default shaderInfo

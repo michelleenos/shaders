@@ -1,4 +1,4 @@
-import { ShaderInfo } from '../types/types'
+import { type ShaderInfo } from '../types/types'
 
 const uniforms = {
     u_outerFreq: {
@@ -63,8 +63,8 @@ const uniforms = {
     },
 }
 
-const ShaderInfo: ShaderInfo<keyof typeof uniforms> = {
+const shaderInfo: ShaderInfo<keyof typeof uniforms> = {
     uniforms,
 }
 
-export default ShaderInfo
+export default shaderInfo

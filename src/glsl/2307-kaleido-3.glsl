@@ -27,7 +27,7 @@ void main() {
 
   vec3 col_final = vec3(0.0, 0.0, 0.0);
 
-  for (float i = 0.0; i < 1.0; i++) {
+  for(float i = 0.0; i < 1.0; i++) {
     uv = fract(uv * 1.5) - 0.5;
 
     float d = crossSDF(uv + vec2(0.5), 0.5) * sin(a0 * 2.0);

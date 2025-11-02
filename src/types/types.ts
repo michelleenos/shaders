@@ -30,8 +30,13 @@ export type ShaderUniform = UniformNumber | UniformColor | UniformVector2 | Unif
 export type Uniforms<T extends string | number = string> = {
     [key in T]: ShaderUniform
 }
+
+export type UniformsPreset<T extends string | number = string> = {
+    [key in T]?: any
+}
+
 export interface ShaderInfo<T extends string | number = string> {
     uniforms: Uniforms<T>
-    presets?: { [key in T]?: any }[]
+    presets?: UniformsPreset<T>[]
     textures?: { [key: string]: UniformTexture }
 }

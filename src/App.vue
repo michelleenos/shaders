@@ -45,42 +45,49 @@ const toggleSidebar = () => {
 <style lang="scss" scoped>
 .grid-container {
     background: #242424;
-    display: grid;
+    // display: grid;
     height: 100%;
     max-height: 100vh;
     overflow: hidden;
     position: relative;
-    grid-template:
-        'topbar topbar' 2.5rem
-        'links canvas' 1fr / auto 1fr;
+    // grid-template:
+    //     'topbar topbar' 2.5rem
+    //     'links canvas' 1fr / auto 1fr;
 }
 
 .grid-topbar {
-    background: #242424;
-    grid-row: 1;
-    grid-column: 1 / 3;
+    background: rgba(0, 0, 0, 0.8);
+    grid-area: topbar;
     padding-left: 1rem;
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 9;
 }
 
 .grid-canvas {
-    grid-row: 2;
-    grid-column: 2;
     background: #242424;
-    align-self: start;
-    justify-self: start;
     padding: 1.5rem;
 }
 
-.grid-links-list {
+.grid-links {
+    position: absolute;
     height: 100%;
-    background: #fff;
-    padding: 1.5rem;
+    top: 0;
+    left: 0;
+    background: #e2e2e2;
+    padding-top: 3rem;
+    padding-bottom: 2rem;
+}
+
+.grid-links-list {
+    position: relative;
+    height: 100%;
+    background: #e2e2e2;
+    padding: 0 1.5rem;
     margin: 0;
     display: block;
     overflow: auto;
-    position: absolute;
-    top: 0;
-    left: 0;
 }
 
 .sidebar-toggle {
@@ -143,19 +150,35 @@ const toggleSidebar = () => {
 }
 
 @media (min-width: 900px) {
+    .grid-container {
+        display: grid;
+        height: 100vh;
+        grid-template:
+            'topbar topbar' 2.5rem
+            'links canvas' 1fr / auto 1fr;
+    }
+    .grid-topbar {
+        grid-area: topbar;
+    }
     .grid-links {
-        grid-column: 1;
-        grid-row: 1 / 3;
+        grid-area: links;
+        position: relative;
+        // max-height: 100%;
+        height: calc(100vh - 2.5rem);
+        padding-top: 1rem;
+        padding-bottom: 1.5rem;
+        // overflow: auto;
+        // grid-column: 1;
+        // grid-row: 1 / 3;
     }
 
     .grid-links-list {
-        position: relative;
-        border-right: 1px solid #242424;
-        max-height: 100%;
-        border-bottom: 1px solid #242424;
+        // position: relative;
+        // border-bottom: 1px solid #242424;
     }
 
     .grid-canvas {
+        grid-area: canvas;
         overflow: auto;
         max-height: 100%;
         grid-row: 2;

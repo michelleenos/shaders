@@ -3,6 +3,7 @@ precision mediump float;
 uniform vec2 u_mouse;
 uniform vec2 u_resolution;
 uniform float u_time;
+uniform float u_versionOverlap;
 
 #define PI 3.14159265358979323846
 
@@ -21,6 +22,10 @@ vec3 random3(vec3 c) {
   j *= .125;
   r.y = fract(512.0 * j);
   return r - 0.5;
+}
+
+float mapRange(float value, float low1, float high1, float low2, float high2) {
+  return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
 }
 
 // https://thebookofshaders.com/edit.php#11/iching-03.frag
@@ -95,7 +100,7 @@ float r2(vec2 _st, float _time) {
   fpos += adj;
 
   float second = 1.0 - step(1.0, mod(ipos.x - 1.0, 3.0));
-  float r = rect(fpos, vec2(0.9, 0.86));
+  float r = rect(fpos, vec2(0.9, 0.8));
   return r * second;
 }
 
@@ -112,10 +117,9 @@ vec3 rects(vec2 _st) {
   float adj = snoise(vec3(_st.x * 20.0, _st.y * 50.0, fpos.x + t)) * 0.05;
 
   fpos += adj;
-
   float subtract = adj * 0.8;
 
-  // https://graphtoy.com/?f1(x,t)=smoothstep(0.4,0.9,sin(x))
+  // https://graphtoy.com/?f1(x,t)=smoothstep(0.4,0.9,sin(x)
   fpos -= subtract * smoothstep(0.7, 0.9, sin(t)) * one;
   fpos -= subtract * smoothstep(0.7, 0.9, sin(t + 1.5)) * two;
   fpos -= subtract * smoothstep(0.7, 0.9, sin(t + 3.5)) * three;
@@ -137,7 +141,7 @@ void main() {
   col = mix(col, purple, r1(st, u_time * 0.5));
   col += purple * r2(st, u_time * 0.5);
 
-  col = rects(st);
+  col = mix(rects(st), col, u_versionOverlap);
 
   gl_FragColor = vec4(vec3(col), 1.0);
 }

@@ -3,6 +3,7 @@ precision mediump float;
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
+uniform float u_pr;
 
 #include "lygia/draw/circle"
 
@@ -18,7 +19,7 @@ float blinnWyvillCosinApprox(float x) {
 
 float doubleCubicSeat(float x, vec2 ctrl) {
   float y = 0.0;
-  if (x <= ctrl.x) {
+  if(x <= ctrl.x) {
     y = ctrl.y - ctrl.y * pow(1.0 - x / ctrl.x, 3.0);
   } else {
     y = ctrl.y + (1.0 - ctrl.y) * (pow((x - ctrl.x) / (1.0 - ctrl.x), 3.0));
@@ -31,7 +32,7 @@ void main() {
   vec2 uv = gl_FragCoord.xy / u_resolution.xy;
   uv.x *= u_resolution.x / u_resolution.y;
 
-  vec2 mouse = (u_mouse.xy / u_resolution.xy);
+  vec2 mouse = (u_mouse.xy / (u_resolution.xy / u_pr));
 
   float px = 1.0 / u_resolution.y; // one pixel
 

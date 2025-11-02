@@ -19,7 +19,7 @@ const keys = Object.keys(entries)
 
 <style scoped>
 ul {
-    margin: 1rem 0;
+    margin: 0;
     list-style: none;
     padding: 0;
     font-family: monospace;

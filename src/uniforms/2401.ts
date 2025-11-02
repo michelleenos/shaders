@@ -91,7 +91,7 @@ const uniforms = {
     },
 }
 
-const ShaderInfo: ShaderInfo<keyof typeof uniforms> = {
+const shaderInfo: ShaderInfo<keyof typeof uniforms> = {
     uniforms,
     textures,
     presets: [
@@ -114,4 +114,4 @@ const ShaderInfo: ShaderInfo<keyof typeof uniforms> = {
     ],
 }
 
-export default ShaderInfo
+export default shaderInfo

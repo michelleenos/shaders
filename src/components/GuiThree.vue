@@ -7,7 +7,8 @@ import {
     UniformNumber,
     UniformVector2,
     Uniforms as UniformsRenamed,
-    ShaderInfo as ShaderInfoRenamed,
+    ShaderInfo,
+    UniformsPreset,
 } from '../types/types'
 import { onUnmounted, onMounted } from 'vue'
 
@@ -15,7 +16,7 @@ let gui: GUI
 interface Props {
     uniforms: UniformsRenamed
     material: THREE.ShaderMaterial
-    presets?: ShaderInfoRenamed['presets']
+    presets?: ShaderInfo['presets']
 }
 const props = defineProps<Props>()
 const emits = defineEmits(['changeUniform'])
@@ -34,8 +35,11 @@ const isNumberProp = (prop: ShaderUniform): prop is UniformNumber => {
 
 onMounted(() => {
     gui = new GUI()
+    const defaultPreset: UniformsPreset<keyof typeof props.uniforms> = {}
+
     for (const key in props.uniforms) {
         const uniform = props.uniforms[key]
+        defaultPreset[key] = uniform.value
 
         if (isColorProp(uniform)) {
             gui.addColor(props.material.uniforms[key], 'value')
@@ -71,31 +75,40 @@ onMounted(() => {
         }
     }
 
+    const setPreset = (value: string) => {
+        const preset = props.presets?.[+value] ?? defaultPreset
+        for (const key in props.uniforms) {
+            const uniform = props.uniforms[key]
+            const newValue = preset[key]
+            if (isColorProp(uniform)) {
+                props.material.uniforms[key].value = new THREE.Color(newValue)
+            } else if (isVec2Prop(uniform)) {
+                props.material.uniforms[key].value = new THREE.Vector2(newValue.x, newValue.y)
+            } else {
+                props.material.uniforms[key].value = newValue
+            }
+        }
+        gui.controllersRecursive().forEach((controller) => {
+            controller.updateDisplay()
+        })
+    }
+
     if (props.presets) {
-        let presetsObj = { preset: '' }
-        gui.add(presetsObj, 'preset', ['', ...props.presets.map((_, i) => i)])
+        let presetsObj = { preset: 'default' }
+        gui.add(presetsObj, 'preset', ['default', ...props.presets.map((_, i) => i)])
             .name('Presets')
             .onChange((value: string) => {
-                if (value === '') return
-                for (const key in props.uniforms) {
-                    const uniform = props.uniforms[key]
-                    const newSetting = props.presets![+value] ?? uniform.value
-                    if (isColorProp(uniform)) {
-                        props.material.uniforms[key].value = new THREE.Color(newSetting[key])
-                    } else if (isVec2Prop(uniform)) {
-                        props.material.uniforms[key].value = new THREE.Vector2(
-                            newSetting[key].x,
-                            newSetting[key].y
-                        )
-                    } else {
-                        props.material.uniforms[key].value = newSetting[key]
-                    }
-                }
-
-                gui.controllersRecursive().forEach((controller) => {
-                    controller.updateDisplay()
-                })
+                setPreset(value)
             })
+    } else {
+        gui.add(
+            {
+                reset: () => {
+                    setPreset('default')
+                },
+            },
+            'reset'
+        )
     }
 })
 

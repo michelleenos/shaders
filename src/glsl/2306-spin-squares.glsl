@@ -6,7 +6,7 @@ uniform float u_time;
 
 #define PI 3.14159265358979323846
 
-float map (float value, float inmin, float inmax, float outmin, float outmax) {
+float map(float value, float inmin, float inmax, float outmin, float outmax) {
   return (value - inmin) * (outmax - outmin) / (inmax - inmin) + outmin;
 }
 
@@ -15,19 +15,6 @@ vec2 rotate2d(vec2 _st, float _angle) {
   _st *= mat2(cos(_angle), -sin(_angle), sin(_angle), cos(_angle));
   _st += 0.5;
   return _st;
-}
-
-vec2 tile(vec2 _st, float _zoom) {
-  _st *= _zoom;
-  return fract(_st);
-}
-
-float line(vec2 _st) {
-  float edge1 = step(0.000, _st.x);
-  float edge2 = step(0.002, _st.x);
-  float line = edge1 - edge2;
-
-  return line;
 }
 
 float rect(vec2 _st, vec2 size, float smoothness) {
@@ -63,7 +50,6 @@ void main() {
 
   st = rotate2d(st, var * PI * check1);
   st = rotate2d(st, -var * PI * check2);
-
 
   float outeredge = 0.7 + map(cos(fract(u_time * 0.5) * PI * 2.0), -1.0, 1.0, -0.2, 0.8) * check1;
   float inneredge = 0.6 - check1 * 0.1;

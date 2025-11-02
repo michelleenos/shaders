@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { ShaderInfo } from '../types/types'
+import { type ShaderInfo } from '../types/types'
 
 const uniforms = {
     u_smoothness: {

@@ -4,6 +4,8 @@ import * as THREE from 'three'
 import { useRoute } from 'vue-router'
 import { ref, type Ref, onMounted, onUnmounted, watchEffect } from 'vue'
 import { Uniforms, ShaderInfo } from '../types/types'
+import { useMouseInElement } from '@vueuse/core'
+import Module from 'module'
 
 const vertexShader = `
     varying vec2 vPosition;
@@ -35,6 +37,13 @@ const textures: Ref<ShaderInfo['textures'] | undefined> = ref(undefined)
 
 const shaderError: Ref<string | boolean> = ref(false)
 
+const {
+    elementX: mouseX,
+    elementY: mouseY,
+    // elementWidth: canvasWidth,
+    elementHeight: canvasHeight,
+} = useMouseInElement(canvas)
+
 const sizes = {
     x: 500,
     y: 500,
@@ -43,6 +52,7 @@ const sizes = {
 onMounted(() => {
     if (!canvas.value) return
 
+    const pr = Math.min(window.devicePixelRatio, 2)
     camera.value = new THREE.PerspectiveCamera(10, sizes.x / sizes.y, 0.1, 10)
     camera.value.position.z = 1
     shaderMaterial.value = new THREE.ShaderMaterial({
@@ -50,13 +60,15 @@ onMounted(() => {
         uniforms: {
             u_resolution: { value: { x: sizes.x, y: sizes.y } },
             u_time: { value: 0 },
+            u_pr: { value: pr },
+            u_mouse: { value: { x: 0, y: 0 } },
         },
     })
     scene.add(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shaderMaterial.value))
     clock.value = new THREE.Clock()
 
     renderer.value = new THREE.WebGLRenderer({ canvas: canvas.value, antialias: true })
-    renderer.value.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.value.setPixelRatio(pr)
     renderer.value.setSize(sizes.x, sizes.y)
 
     renderer.value.debug.onShaderError = () => {
@@ -66,10 +78,9 @@ onMounted(() => {
         console.log(renderer.value!.info.programs)
     }
 
+    shaderMaterial.value.uniforms.u_pr.value = pr
     shaderMaterial.value.uniforms.u_resolution.value.x = renderer.value.domElement.width
     shaderMaterial.value.uniforms.u_resolution.value.y = renderer.value.domElement.height
-
-    // window.renderer = renderer.value
 })
 
 onUnmounted(() => {
@@ -92,7 +103,7 @@ const cleanupUniforms = () => {
     if (!shaderMaterial.value) return
 
     for (const key of Object.keys(shaderMaterial.value.uniforms)) {
-        if (key !== 'u_resolution' && key !== 'u_time') {
+        if (key !== 'u_resolution' && key !== 'u_time' && key !== 'u_pr' && key !== 'u_mouse') {
             shaderMaterial.value.uniforms[key].value = null
         }
     }
@@ -112,17 +123,17 @@ watchEffect(async () => {
     }
 
     try {
-        const uniformsExist = await import(`../uniforms/${sketch}.ts`)
-        const defaultExist = uniformsExist.default as ShaderInfo
-        if (defaultExist) {
-            uniforms.value = defaultExist.uniforms
-            if (defaultExist.presets) {
-                presets.value = defaultExist.presets
+        const uniformsModule = await import(`../uniforms/${sketch}.ts`)
+        const shaderInfo = uniformsModule.default as ShaderInfo
+        if (shaderInfo) {
+            uniforms.value = shaderInfo.uniforms
+            if (shaderInfo.presets) {
+                presets.value = shaderInfo.presets
             } else {
                 presets.value = undefined
             }
 
-            textures.value = defaultExist.textures ?? undefined
+            textures.value = shaderInfo.textures ?? undefined
         }
     } catch (err) {
         uniforms.value = null
@@ -186,6 +197,8 @@ const tick = () => {
 
     const elapsed = clock.value.getElapsedTime()
     shaderMaterial.value.uniforms.u_time.value = elapsed
+    shaderMaterial.value.uniforms.u_mouse.value.x = mouseX
+    shaderMaterial.value.uniforms.u_mouse.value.y = canvasHeight.value - mouseY.value
     renderer.value.render(scene, camera.value)
     animation.value = window.requestAnimationFrame(tick)
 }
