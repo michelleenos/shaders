@@ -5,7 +5,6 @@ import { useRoute } from 'vue-router'
 import { ref, type Ref, onMounted, onUnmounted, watchEffect } from 'vue'
 import { Uniforms, ShaderInfo } from '../types/types'
 import { useMouseInElement } from '@vueuse/core'
-import Module from 'module'
 
 const vertexShader = `
     varying vec2 vPosition;
