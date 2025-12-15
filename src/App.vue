@@ -31,7 +31,7 @@ function onSidebarEnter(elem: Element, done: () => void) {
         duration: 300,
         easing,
     }).finished.then(() => {
-        el.style.width = 'auto'
+        el.style.width = ''
         done()
     })
 }
@@ -198,9 +198,11 @@ function onSidebarLeave(elem: Element, done: () => void) {
         position: relative;
         height: 100%;
         overflow-y: auto;
+        width: calc(var(--sketch-list-px) * 1px);
     }
     .app-content.sidebar-open {
         .app-canvas {
+            width: calc(100% - (var(--sketch-list-px) * 1px));
             // transform: translateX(20ch);
         }
     }

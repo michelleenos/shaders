@@ -34,7 +34,9 @@ const uniforms: Ref<Uniforms | null> = ref(null)
 const presets: Ref<ShaderInfo['presets'] | undefined> = ref(undefined)
 const textures: Ref<ShaderInfo['textures'] | undefined> = ref(undefined)
 
-const shaderError: Ref<string | boolean> = ref(false)
+const hasShaderError = ref<boolean>(false)
+const shaderErrorContent: Ref<string | null> = ref(null)
+const programsLen = ref(0)
 
 const {
     elementX: mouseX,
@@ -71,10 +73,10 @@ onMounted(() => {
     renderer.value.setSize(sizes.x, sizes.y)
 
     renderer.value.debug.onShaderError = () => {
-        shaderError.value = true
+        hasShaderError.value = true
+        const err = findShaderError()
 
-        console.warn('shader error')
-        console.log(renderer.value!.info.programs)
+        shaderErrorContent.value = err
     }
 
     shaderMaterial.value.uniforms.u_pr.value = pr
@@ -114,6 +116,10 @@ watchEffect(async () => {
     theShader.value = null
     uniforms.value = null
 
+    error.value = false
+    hasShaderError.value = false
+    shaderErrorContent.value = null
+
     try {
         const importedShader = await import(`../glsl/${sketch}.glsl`)
         theShader.value = importedShader.default
@@ -140,9 +146,9 @@ watchEffect(async () => {
     }
 
     if (theShader.value && shaderMaterial.value) {
-        error.value = false
-        shaderMaterial.value.fragmentShader = theShader.value
         cleanupUniforms()
+
+        shaderMaterial.value.fragmentShader = theShader.value
         setAllUniforms()
         setTextures()
         shaderMaterial.value.needsUpdate = true
@@ -174,23 +180,44 @@ const setAllUniforms = () => {
     })
 }
 
+const findShaderError = () => {
+    let programs = renderer.value!.info && renderer.value!.info.programs
+    let errs = ''
+    console.log('programs length: ', programs?.length)
+    programs?.forEach((p, i) => {
+        // @ts-ignore
+        let diagnostics = p.diagnostics
+        let err = diagnostics && diagnostics.fragmentShader && diagnostics.fragmentShader.log
+        if (err)
+            errs += `
+        program ${i}: ${err}`
+    })
+    return errs
+}
+
 const tick = () => {
     if (
-        shaderError.value ||
         !(renderer.value && camera.value && theShader.value && clock.value && shaderMaterial.value)
     ) {
-        animation.value && window.cancelAnimationFrame(animation.value)
+        return
+    }
 
-        if (shaderError.value) {
-            let program =
-                renderer.value!.info &&
-                renderer.value!.info.programs &&
-                renderer.value!.info.programs[0]
-            // @ts-ignore
-            let diagnostics = program.diagnostics
-            let err = diagnostics && diagnostics.fragmentShader && diagnostics.fragmentShader.log
-            error.value = err
+    let programs = renderer.value!.info && renderer.value!.info.programs
+    let len = programs?.length
+    if (typeof len === 'number') {
+        programsLen.value = len
+    }
+
+    if (hasShaderError.value && !shaderErrorContent.value) {
+        let shaderError = findShaderError()
+        if (shaderError) {
+            shaderErrorContent.value = shaderError
+            animation.value && window.cancelAnimationFrame(animation.value)
+            return
         }
+    }
+    if (error.value) {
+        animation.value && window.cancelAnimationFrame(animation.value)
         return
     }
 
@@ -206,6 +233,10 @@ const tick = () => {
 <template>
     <div>
         <div class="canvas-wrap" tabindex="0">
+            <div v-if="hasShaderError" class="error">
+                <h2>glsl error</h2>
+                {{ shaderErrorContent || 'Unknown' }}
+            </div>
             <div v-if="error" class="error">{{ error }}</div>
             <canvas id="sandbox" width="500" height="500" ref="canvas"></canvas>
             <GuiThree
@@ -229,5 +260,8 @@ canvas {
 
 .error {
     color: rgb(255, 146, 116);
+    max-width: 800px;
+    margin-right: 300px;
+    /* max-width: 500px; */
 }
 </style>
