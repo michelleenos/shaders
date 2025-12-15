@@ -1,3 +1,5 @@
+// 2023-06  
+
 precision mediump float;
 
 uniform vec2 u_mouse;
@@ -9,7 +11,6 @@ uniform float u_time;
 // float map (float value, float inmin, float inmax, float outmin, float outmax) {
 //   return (value - inmin) * (outmax - outmin) / (inmax - inmin) + outmin;
 // }
-
 
 vec3 indigo = vec3(0.0, 0.161, 0.432);
 vec3 rose = vec3(0.851, 0.012, 0.408);

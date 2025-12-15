@@ -1,3 +1,5 @@
+// 2023-12
+
 precision mediump float;
 
 uniform vec2 u_resolution;
@@ -39,7 +41,7 @@ void main() {
   vec2 uv0 = uv;
   float d0 = length(uv0);
 
-  for (float i = 0.0; i < 3.0; i++) {
+  for(float i = 0.0; i < 3.0; i++) {
 
     vec3 c1 = palette(d0 + u_time * u_speedColor + i * 4.0);
 

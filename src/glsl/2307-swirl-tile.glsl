@@ -1,6 +1,6 @@
+// 2023-07
+
 precision mediump float;
-
-
 uniform vec2 u_mouse;
 uniform vec2 u_resolution;
 uniform float u_time;
@@ -83,8 +83,7 @@ void main() {
   vec2 ipos = floor(st);
   vec2 fpos = fract(st);
 
-  float angle =
-      snoise(vec3(fpos.x + ipos.x * 0.3, fpos.y + ipos.y * 0.3, u_time)) * PI;
+  float angle = snoise(vec3(fpos.x + ipos.x * 0.3, fpos.y + ipos.y * 0.3, u_time)) * PI;
   st *= rotate2d(angle);
 
   float c = lines(st, w, n, sm);

@@ -1,3 +1,4 @@
+// 2022-08
 precision mediump float;
 
 uniform vec2 u_mouse;
@@ -12,7 +13,6 @@ void main() {
   float col = 0.1;
 
   st *= 25.0;
-
 
   col += cos(st.y * (abs(cos(u_time * 0.2)) * 0.5 + 1.0));
   col += sin(st.x + u_time * 0.5);

@@ -1,3 +1,4 @@
+// 2023-07
 precision mediump float;
 
 uniform vec2 u_resolution;
@@ -11,22 +12,20 @@ uniform float u_time;
 
 // https://thebookofshaders.com/edit.php#11/2d-vnoise.frag
 float random2(vec2 st) {
-  st = vec2(dot(st, vec2(127.1, 311.7)), dot(st, vec2(269.5, 183.3)));
+    st = vec2(dot(st, vec2(127.1, 311.7)), dot(st, vec2(269.5, 183.3)));
 
-  return -1.0 +
-         2.0 * fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
+    return -1.0 +
+        2.0 * fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
 
 // Value noise by Inigo Quilez - iq/2013
 // https://www.shadertoy.com/view/lsf3WH
 float noise(vec2 st) {
-  vec2 i = floor(st);
-  vec2 f = fract(st);
-  vec2 u = f * f * (3.0 - 2.0 * f);
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+    vec2 u = f * f * (3.0 - 2.0 * f);
 
-  return mix(mix(random2(i + vec2(0.0, 0.0)), random2(i + vec2(1.0, 0.0)), u.x),
-             mix(random2(i + vec2(0.0, 1.0)), random2(i + vec2(1.0, 1.0)), u.x),
-             u.y);
+    return mix(mix(random2(i + vec2(0.0, 0.0)), random2(i + vec2(1.0, 0.0)), u.x), mix(random2(i + vec2(0.0, 1.0)), random2(i + vec2(1.0, 1.0)), u.x), u.y);
 }
 
 vec3 palette(float t) {
@@ -56,7 +55,7 @@ void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
     uv -= 0.5;
     uv.x *= u_resolution.x / u_resolution.y;
-    
+
     vec2 uv0 = uv;
     float d0 = length(uv0);
 
@@ -64,8 +63,7 @@ void main() {
 
     vec3 col = palette(d0 + u_time);
 
-    float angle = 
-        snoise(vec3(uv.x + u_time * 0.1, uv.y - u_time * 0.3, 10.0 + u_time * 0.1)) * PI;
+    float angle = snoise(vec3(uv.x + u_time * 0.1, uv.y - u_time * 0.3, 10.0 + u_time * 0.1)) * PI;
     uv *= rotate2d(angle);
 
     uv = fract(uv * 8.5) - 0.5;

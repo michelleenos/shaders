@@ -1,3 +1,5 @@
+// 2023-12
+
 precision mediump float;
 
 #include "includes/rotate2d.glsl"
@@ -33,7 +35,9 @@ float map(float value, float inmin, float inmax, float outmin, float outmax) {
   return (value - inmin) * (outmax - outmin) / (inmax - inmin) + outmin;
 }
 
-float easeInSine(float t) { return 1.0 - cos((t * PI) / 2.0); }
+float easeInSine(float t) {
+  return 1.0 - cos((t * PI) / 2.0);
+}
 
 void main() {
   float each = u_duration / u_iterations;
@@ -46,7 +50,7 @@ void main() {
   float d = 0.0;
   float angle_step = u_spin;
 
-  for (float i = 0.0; i < u_iterations; i++) {
+  for(float i = 0.0; i < u_iterations; i++) {
     float t = mod(time + i * each, u_duration) / u_duration;
 
     float amt = easeInSine(t);

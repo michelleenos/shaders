@@ -1,3 +1,5 @@
+// 2023-06
+
 precision mediump float;
 
 uniform vec2 u_mouse;
@@ -36,7 +38,7 @@ float random2(vec2 st) {
   st = vec2(dot(st, vec2(127.1, 311.7)), dot(st, vec2(269.5, 183.3)));
 
   return -1.0 +
-         2.0 * fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
+    2.0 * fract(sin(dot(st.xy, vec2(12.9898, 78.233))) * 43758.5453123);
 }
 
 // Value noise by Inigo Quilez - iq/2013
@@ -46,9 +48,7 @@ float noise(vec2 st) {
   vec2 f = fract(st);
   vec2 u = f * f * (3.0 - 2.0 * f);
 
-  return mix(mix(random2(i + vec2(0.0, 0.0)), random2(i + vec2(1.0, 0.0)), u.x),
-             mix(random2(i + vec2(0.0, 1.0)), random2(i + vec2(1.0, 1.0)), u.x),
-             u.y);
+  return mix(mix(random2(i + vec2(0.0, 0.0)), random2(i + vec2(1.0, 0.0)), u.x), mix(random2(i + vec2(0.0, 1.0)), random2(i + vec2(1.0, 1.0)), u.x), u.y);
 }
 
 mat2 rotate2d(float angle) {
@@ -71,8 +71,13 @@ float swirls(vec2 _st, float _grid, float _time, float _linesnum) {
 
 // in --> -1 to 1
 // out --> 2 to 3
-float remap(float _in, float _inMin, float _inMax, float _outMin,
-            float _outMax) {
+float remap(
+  float _in,
+  float _inMin,
+  float _inMax,
+  float _outMin,
+  float _outMax
+) {
   return _outMin + (_outMax - _outMin) * (_in - _inMin) / (_inMax - _inMin);
 }
 

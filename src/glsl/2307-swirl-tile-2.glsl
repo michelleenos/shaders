@@ -1,3 +1,5 @@
+// 2023-07
+
 precision mediump float;
 
 #include "includes/rotate2d.glsl"
@@ -34,7 +36,7 @@ void main() {
   noisePosZ += ipos.x * u_offsetXi;
   noisePosZ += ipos.y * u_offsetYi;
 
-  float angle = snoise( vec3(fpos.x, fpos.y, noisePosZ) );
+  float angle = snoise(vec3(fpos.x, fpos.y, noisePosZ));
   angle *= PI;
 
   st *= rotate2d(angle);

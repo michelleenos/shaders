@@ -1,3 +1,5 @@
+// 2023-07
+
 precision mediump float;
 
 uniform vec2 u_resolution;
@@ -23,7 +25,7 @@ void main() {
 
   vec3 col_final = vec3(0.0, 0.0, 0.0);
 
-  for (float i = 0.0; i < 4.0; i++) {
+  for(float i = 0.0; i < 4.0; i++) {
     uv = fract(uv * 1.5) - 0.5;
     float d = length(uv);
     d *= exp(-d0 * 3.0);

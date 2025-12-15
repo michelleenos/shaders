@@ -1,3 +1,5 @@
+// 2023-07
+
 precision mediump float;
 
 uniform vec2 u_resolution;
@@ -24,18 +26,14 @@ float aafract(float x) { // --- antialiased fract
   float w = fwidth(x); // NB: x must not be discontinuous or factor discont out
   // explaining fwidth:
   // https://computergraphics.stackexchange.com/questions/61/what-is-fwidth-and-how-does-it-work
-  return v < 1. - w
-             ? v / (1. - w)
-             : (1. - v) /
-                   w; // replace right step by down slope (-> chainsaw is
+  return v < 1. - w ? v / (1. - w) : (1. - v) /
+    w; // replace right step by down slope (-> chainsaw is
                       // continuous). shortened slope : added downslope near v=1
 }
 float aastep(float x) { // --- antialiased step(.5)
-  float w = fwidth(
-      x); // pixel width. NB: x must not be discontinuous or factor discont out
-  return smoothstep(.7, -.7,
-                    (abs(fract(x - .25) - .5) - .25) /
-                        w); // just use (offseted) smooth squares
+  float w = fwidth(x); // pixel width. NB: x must not be discontinuous or factor discont out
+  return smoothstep(.7, -.7, (abs(fract(x - .25) - .5) - .25) /
+    w); // just use (offseted) smooth squares
 }
 
 float offset(float t, float ad) {
