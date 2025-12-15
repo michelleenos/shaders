@@ -17,20 +17,24 @@ const keys = Object.keys(entries)
     </ul>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 ul {
+    --width-chars: calc((var(--sketch-list-px) - 20) * 0.104);
     margin: 0;
     list-style: none;
     padding: 0;
     font-family: monospace;
     font-size: 1rem;
-    max-width: 20ch;
+    max-width: calc(var(--sketch-list-px) * 1px);
+    width: calc(var(--sketch-list-px) * 1px);
     z-index: 2;
+    padding-left: 20px;
 }
 li {
     line-height: 1.1;
     position: relative;
     margin-bottom: 0.2rem;
+    white-space: nowrap;
 }
 li:before {
     content: '✦';
@@ -43,7 +47,7 @@ li:before {
 }
 
 li a {
-    font-size: calc(19 / var(--len) * 1rem);
+    font-size: calc((var(--width-chars) - 1) / var(--len) * 1rem);
     z-index: 1;
 }
 </style>

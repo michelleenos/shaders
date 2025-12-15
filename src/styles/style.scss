@@ -1,25 +1,27 @@
+@import './reset.css';
+
 :root {
     --accent: #e34141;
     --purple: #bfb2e2;
+    --purple-light: #e1daf3;
+
     --plum: #883677;
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
 
-    color: #242424;
-    background-color: #f5f5f5;
-
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-text-size-adjust: 100%;
+    /* color: #242424; */
+    /* background-color: #f5f5f5; */
 }
 
 *,
 *:after,
 *:before {
     box-sizing: border-box;
+}
+
+html {
+    font-size: 100%;
 }
 
 a {
@@ -61,6 +63,8 @@ body {
     min-width: 320px;
     min-height: 100vh;
     height: 100vh;
+    font-size: 1rem;
+    background: #242424;
 }
 
 #app {

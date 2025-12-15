@@ -1,12 +1,5 @@
 import { ShaderInfo } from '../types/types'
 
-const textures = {
-    u_texture: {
-        path: '/noisy.png',
-        value: undefined,
-    },
-}
-
 const uniforms = {
     u_iterations: {
         value: 3,
@@ -93,7 +86,6 @@ const uniforms = {
 
 const shaderInfo: ShaderInfo<keyof typeof uniforms> = {
     uniforms,
-    textures,
     presets: [
         {
             u_iterations: 9,
