@@ -3,10 +3,16 @@ import { type ShaderInfo } from '../types/types'
 
 const uniforms = {
     u_smoothness: {
-        value: 0.45,
+        value: 0.6,
         min: 0,
         max: 3,
         step: 0.01,
+    },
+    u_balls: {
+        value: 5,
+        min: 1,
+        max: 10,
+        step: 1,
     },
     u_center: {
         value: new THREE.Vector2(0, 0),
@@ -15,7 +21,7 @@ const uniforms = {
         step: 0.01,
     },
     u_blobdist: {
-        value: 0.6,
+        value: 0.7,
         min: 0,
         max: 1,
         step: 0.01,
@@ -26,18 +32,25 @@ const uniforms = {
         max: 1,
         step: 0.01,
     },
-    u_speedStart: {
+    u_speedMin: {
         value: 0.5,
         min: 0,
-        max: 2,
+        max: 5,
+        step: 0.1,
+    },
+    u_speedMax: {
+        value: 1.0,
+        min: 0,
+        max: 5,
         step: 0.1,
     },
     u_innerSize: {
-        value: 0.15,
+        value: 0.2,
         min: 0,
         max: 1,
         step: 0.01,
     },
+
     u_blurStart: {
         value: 0,
         min: 0,
@@ -50,17 +63,15 @@ const uniforms = {
         max: 1,
         step: 0.001,
     },
-    u_balls: {
-        value: 5,
-        min: 1,
-        max: 10,
-        step: 1,
-    },
     u_blurPow: {
         value: 2,
-        min: 0,
+        min: 0.1,
         max: 5,
         step: 0.1,
+    },
+    u_timeOffset: {
+        value: new THREE.Vector2(Math.random() * 5 - 2.5, Math.random() * 2 - 2.5),
+        hide: true,
     },
 }
 

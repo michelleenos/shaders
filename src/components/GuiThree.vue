@@ -40,6 +40,7 @@ onMounted(() => {
     for (const key in props.uniforms) {
         const uniform = props.uniforms[key]
         defaultPreset[key] = uniform.value
+        if (uniform.hide) continue
 
         if (isColorProp(uniform)) {
             gui.addColor(props.material.uniforms[key], 'value')

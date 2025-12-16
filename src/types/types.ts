@@ -25,7 +25,9 @@ export interface UniformTexture {
     path: string
 }
 
-export type ShaderUniform = UniformNumber | UniformColor | UniformVector2 | UniformBoolean
+export type ShaderUniform = (UniformNumber | UniformColor | UniformVector2 | UniformBoolean) & {
+    hide?: boolean
+}
 
 export type Uniforms<T extends string | number = string> = {
     [key in T]: ShaderUniform
