@@ -51,6 +51,8 @@ float outlinerect(vec2 coord, vec2 size) {
 void main() {
   vec2 st = gl_FragCoord.xy / u_resolution.xy;
 
+  vec2 st2 = st;
+
   vec3 blue = vec3(0.204, 0.552, 0.668);
   vec3 darkblue = vec3(0.044, 0.0, 0.204);
   vec3 yellow = vec3(0.988, 0.792, 0.274);
@@ -60,10 +62,16 @@ void main() {
 
   vec3 col = darkblue;
 
+  float timestep = mod(u_time, 1.0);
+
+  // col += rect(st + vec2(0.5, 0.25), vec2(0.01, 0.5));
+  // col += rect(st + vec2(-0.5, 0.25), vec2(0.01, 0.5));
+  col += rect(st + vec2(0.0, 0.5), vec2(1.0, 0.05));
+  col += rect(st + vec2(0.0, 0.25), vec2(0.05, 0.7));
+
   vec2 topmid = st - vec2(0.5, 0.75);
   topmid = rotate2d(PI * 0.25) * topmid * 2.0;
   topmid += 0.5;
-  // col += box(topmid, 0.7);
   float topmid_shape = box(topmid, 0.7);
   col = mix(col, blue, topmid_shape);
 
@@ -81,11 +89,14 @@ void main() {
   col = mix(col, yellow, topleft_shape);
   // col += outline(topleft, 0.7);
 
-  col += rect(st + vec2(0.5, 0.25), vec2(0.01, 0.5));
-  col += rect(st + vec2(-0.5, 0.25), vec2(0.01, 0.5));
-  col += rect(st + vec2(0.0, 0.5), vec2(1.0, 0.01));
-  col += rect(st + vec2(0.0, 0.25), vec2(0.01, 0.5));
+  // col += rect(st + vec2(0.5, 0.25), vec2(0.01, 0.5));
+  // col += rect(st + vec2(-0.5, 0.25), vec2(0.01, 0.5));
+  // col += rect(st + vec2(0.0, 0.5), vec2(1.0, 0.05));
+  // col += rect(st + vec2(0.0, 0.25), vec2(0.05, 0.7));
 
-  // gl_FragColor = vec4(vec3(col), 1.0);
-  gl_FragColor = vec4(col, 1.0);
+  gl_FragColor = vec4(vec3(col), 1.0);
+  // gl_FragColor = vec4(col, 1.0);
+
+  // float am = box(st2, 0.2);
+  // gl_FragColor = vec4(vec3(am), 1.0);
 }
