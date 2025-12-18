@@ -179,6 +179,14 @@ function onSidebarLeave(elem: Element, done: () => void) {
 //     left: -100%;
 // }
 
+.app-canvas {
+    overflow: auto;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
 @media (min-width: 800px) {
     .grid-container {
         height: 100vh;

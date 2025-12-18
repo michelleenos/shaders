@@ -1,3 +1,5 @@
+import * as THREE from 'three'
+
 export interface UniformNumber {
     value: number
     min?: number
@@ -41,4 +43,5 @@ export interface ShaderInfo<T extends string | number = string> {
     uniforms: Uniforms<T>
     presets?: UniformsPreset<T>[]
     textures?: { [key: string]: UniformTexture }
+    sizeControls?: boolean
 }

@@ -2,9 +2,10 @@
 import GuiThree from './GuiThree.vue'
 import * as THREE from 'three'
 import { useRoute } from 'vue-router'
-import { ref, type Ref, onMounted, onUnmounted, watchEffect } from 'vue'
+import { ref, type Ref, onMounted, onUnmounted, watchEffect, watch } from 'vue'
 import { Uniforms, ShaderInfo } from '../types/types'
 import { useMouseInElement } from '@vueuse/core'
+import { cleanupUniforms, findShaderError } from '../utils/three-utils'
 
 const vertexShader = `
     varying vec2 vPosition;
@@ -21,9 +22,13 @@ const route = useRoute()
 const theShader = ref(null)
 const error: Ref<null | unknown> = ref(null)
 
+const baseSizes = { x: 600, y: 600 }
+const sizes = ref({ ...baseSizes })
+const sizeControls = ref(false)
+
 const canvas: Ref<HTMLCanvasElement | null> = ref(null)
 const renderer: Ref<THREE.WebGLRenderer | null> = ref(null)
-const camera: Ref<THREE.Camera | null> = ref(null)
+const camera: Ref<THREE.PerspectiveCamera | null> = ref(null)
 const loader = new THREE.TextureLoader()
 const scene = new THREE.Scene()
 const shaderMaterial: Ref<THREE.ShaderMaterial | null> = ref(null)
@@ -36,30 +41,27 @@ const textures: Ref<ShaderInfo['textures'] | undefined> = ref(undefined)
 
 const hasShaderError = ref<boolean>(false)
 const shaderErrorContent: Ref<string | null> = ref(null)
-const programsLen = ref(0)
 
 const {
     elementX: mouseX,
     elementY: mouseY,
-    // elementWidth: canvasWidth,
+    elementWidth: canvasWidth,
     elementHeight: canvasHeight,
 } = useMouseInElement(canvas)
-
-const sizes = {
-    x: 500,
-    y: 500,
-}
 
 onMounted(() => {
     if (!canvas.value) return
 
+    const { x, y } = sizes.value
+
     const pr = Math.min(window.devicePixelRatio, 2)
-    camera.value = new THREE.PerspectiveCamera(10, sizes.x / sizes.y, 0.1, 10)
+    camera.value = new THREE.PerspectiveCamera(10, x / y, 0.1, 10)
+    camera.value.aspect = x / y
     camera.value.position.z = 1
     shaderMaterial.value = new THREE.ShaderMaterial({
         vertexShader,
         uniforms: {
-            u_resolution: { value: { x: sizes.x, y: sizes.y } },
+            u_resolution: { value: { x: x, y: y } },
             u_time: { value: 0 },
             u_pr: { value: pr },
             u_mouse: { value: { x: 0, y: 0 } },
@@ -68,13 +70,15 @@ onMounted(() => {
     scene.add(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shaderMaterial.value))
     clock.value = new THREE.Clock()
 
+    THREE.ColorManagement.enabled = true
     renderer.value = new THREE.WebGLRenderer({ canvas: canvas.value, antialias: true })
+    renderer.value.outputColorSpace = THREE.SRGBColorSpace
     renderer.value.setPixelRatio(pr)
-    renderer.value.setSize(sizes.x, sizes.y)
+    renderer.value.setSize(x, y)
 
     renderer.value.debug.onShaderError = () => {
         hasShaderError.value = true
-        const err = findShaderError()
+        const err = findShaderError(renderer.value!)
 
         shaderErrorContent.value = err
     }
@@ -100,16 +104,6 @@ onUnmounted(() => {
     })
 })
 
-const cleanupUniforms = () => {
-    if (!shaderMaterial.value) return
-
-    for (const key of Object.keys(shaderMaterial.value.uniforms)) {
-        if (key !== 'u_resolution' && key !== 'u_time' && key !== 'u_pr' && key !== 'u_mouse') {
-            shaderMaterial.value.uniforms[key].value = null
-        }
-    }
-}
-
 watchEffect(async () => {
     const sketch = route.params.sketch
 
@@ -131,6 +125,7 @@ watchEffect(async () => {
         const uniformsModule = await import(`../uniforms/${sketch}.ts`)
         const shaderInfo = uniformsModule.default as ShaderInfo
         if (shaderInfo) {
+            sizeControls.value = shaderInfo.sizeControls || false
             uniforms.value = shaderInfo.uniforms
             if (shaderInfo.presets) {
                 presets.value = shaderInfo.presets
@@ -142,11 +137,13 @@ watchEffect(async () => {
         }
     } catch (err) {
         uniforms.value = null
+        sizeControls.value = false
+        sizes.value = { ...baseSizes }
         presets.value = undefined
     }
 
     if (theShader.value && shaderMaterial.value) {
-        cleanupUniforms()
+        cleanupUniforms(shaderMaterial.value)
 
         shaderMaterial.value.fragmentShader = theShader.value
         setAllUniforms()
@@ -155,6 +152,27 @@ watchEffect(async () => {
         animation.value = window.requestAnimationFrame(tick)
     }
 })
+
+watch(
+    sizes,
+    (value) => {
+        const { x, y } = value
+
+        if (camera.value && renderer.value && shaderMaterial.value) {
+            camera.value.aspect = x / y
+            camera.value.updateProjectionMatrix()
+
+            const pr = Math.min(window.devicePixelRatio, 2)
+            renderer.value.setSize(x, y)
+            renderer.value.setPixelRatio(pr)
+
+            shaderMaterial.value.uniforms.u_pr.value = pr
+            shaderMaterial.value.uniforms.u_resolution.value.x = x
+            shaderMaterial.value.uniforms.u_resolution.value.y = y
+        }
+    },
+    { deep: true }
+)
 
 const setTextures = () => {
     if (!textures.value || !shaderMaterial.value) return
@@ -180,21 +198,6 @@ const setAllUniforms = () => {
     })
 }
 
-const findShaderError = () => {
-    let programs = renderer.value!.info && renderer.value!.info.programs
-    let errs = ''
-    console.log('programs length: ', programs?.length)
-    programs?.forEach((p, i) => {
-        // @ts-ignore
-        let diagnostics = p.diagnostics
-        let err = diagnostics && diagnostics.fragmentShader && diagnostics.fragmentShader.log
-        if (err)
-            errs += `
-        program ${i}: ${err}`
-    })
-    return errs
-}
-
 const tick = () => {
     if (
         !(renderer.value && camera.value && theShader.value && clock.value && shaderMaterial.value)
@@ -202,14 +205,8 @@ const tick = () => {
         return
     }
 
-    let programs = renderer.value!.info && renderer.value!.info.programs
-    let len = programs?.length
-    if (typeof len === 'number') {
-        programsLen.value = len
-    }
-
     if (hasShaderError.value && !shaderErrorContent.value) {
-        let shaderError = findShaderError()
+        let shaderError = findShaderError(renderer.value)
         if (shaderError) {
             shaderErrorContent.value = shaderError
             animation.value && window.cancelAnimationFrame(animation.value)
@@ -238,9 +235,10 @@ const tick = () => {
                 {{ shaderErrorContent || 'Unknown' }}
             </div>
             <div v-if="error" class="error">{{ error }}</div>
-            <canvas id="sandbox" width="500" height="500" ref="canvas"></canvas>
+            <canvas id="sandbox" ref="canvas"></canvas>
             <GuiThree
                 v-if="uniforms && shaderMaterial"
+                :sizes="sizeControls ? sizes : undefined"
                 :presets="presets"
                 :uniforms="uniforms"
                 :material="shaderMaterial" />
@@ -251,12 +249,16 @@ const tick = () => {
 <style scoped>
 .canvas-wrap {
     color: #fff;
+    /* position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: auto; */
 }
 
-canvas {
+/* canvas {
     width: 500px;
     height: 500px;
-}
+} */
 
 .error {
     color: rgb(255, 146, 116);
