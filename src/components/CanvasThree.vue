@@ -156,19 +156,17 @@ watchEffect(async () => {
 watch(
     sizes,
     (value) => {
+        console.log('update sizes')
         const { x, y } = value
 
         if (camera.value && renderer.value && shaderMaterial.value) {
             camera.value.aspect = x / y
             camera.value.updateProjectionMatrix()
 
-            const pr = Math.min(window.devicePixelRatio, 2)
             renderer.value.setSize(x, y)
-            renderer.value.setPixelRatio(pr)
 
-            shaderMaterial.value.uniforms.u_pr.value = pr
-            shaderMaterial.value.uniforms.u_resolution.value.x = x
-            shaderMaterial.value.uniforms.u_resolution.value.y = y
+            shaderMaterial.value.uniforms.u_resolution.value.x = renderer.value.domElement.width
+            shaderMaterial.value.uniforms.u_resolution.value.y = renderer.value.domElement.height
         }
     },
     { deep: true }
@@ -237,7 +235,7 @@ const tick = () => {
             <div v-if="error" class="error">{{ error }}</div>
             <canvas id="sandbox" ref="canvas"></canvas>
             <GuiThree
-                v-if="uniforms && shaderMaterial"
+                v-if="shaderMaterial && uniforms"
                 :sizes="sizeControls ? sizes : undefined"
                 :presets="presets"
                 :uniforms="uniforms"
@@ -249,21 +247,11 @@ const tick = () => {
 <style scoped>
 .canvas-wrap {
     color: #fff;
-    /* position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: auto; */
 }
-
-/* canvas {
-    width: 500px;
-    height: 500px;
-} */
 
 .error {
     color: rgb(255, 146, 116);
     max-width: 800px;
     margin-right: 300px;
-    /* max-width: 500px; */
 }
 </style>

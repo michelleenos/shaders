@@ -16,9 +16,9 @@ import { onUnmounted, onMounted, ref, watch } from 'vue'
 
 let gui: GUI
 interface Props {
-    uniforms: UniformsRenamed
+    uniforms?: UniformsRenamed | null
     material: THREE.ShaderMaterial
-    presets?: ShaderInfo['presets']
+    presets?: ShaderInfo['presets'] | null
     sizes?: { x: number; y: number }
 }
 const props = defineProps<Props>()
@@ -67,32 +67,69 @@ const isNumberProp = (prop: ShaderUniform): prop is UniformNumber => {
 
 onMounted(() => {
     gui = new GUI()
-    const defaultPreset: UniformsPreset<keyof typeof props.uniforms> = {}
 
-    for (const key in props.uniforms) {
-        const uniform = props.uniforms[key]
-        defaultPreset[key] = uniform.value
-        if (uniform.hide) continue
+    if (props.uniforms) {
+        const defaultPreset: UniformsPreset<keyof typeof props.uniforms> = {}
+        for (const key in props.uniforms) {
+            const uniform = props.uniforms[key]
+            defaultPreset[key] = uniform.value
+            if (uniform.hide) continue
 
-        if (isColorProp(uniform)) {
-            const debg = {
-                color: uniform.value.getHexString(),
+            if (isColorProp(uniform)) {
+                const debg = {
+                    color: uniform.value.getHexString(),
+                }
+                gui.addColor(debg, 'color')
+                    .name(key)
+                    .onChange((value: string) => {
+                        props.material.uniforms[key].value.set(value)
+                    })
+            } else if (isVec2Prop(uniform)) {
+                const { min = 0, max = 1, step = 0.01 } = uniform
+                gui.add(props.material.uniforms[key].value, 'x', min, max, step).name(`${key}.x`)
+
+                gui.add(props.material.uniforms[key].value, 'y', min, max, step).name(`${key}.y`)
+            } else if (isNumberProp(uniform)) {
+                const { min = 0, max = 1, step = 0.01 } = uniform
+                gui.add(props.material.uniforms[key], 'value', min, max, step).name(key)
+            } else {
+                gui.add(props.material.uniforms[key], 'value').name(key)
             }
-            gui.addColor(debg, 'color')
-                .name(key)
-                .onChange((value: string) => {
-                    props.material.uniforms[key].value.set(value)
-                })
-        } else if (isVec2Prop(uniform)) {
-            const { min = 0, max = 1, step = 0.01 } = uniform
-            gui.add(props.material.uniforms[key].value, 'x', min, max, step).name(`${key}.x`)
+        }
+        const setPreset = (value: string) => {
+            const preset = props.presets?.[+value] ?? defaultPreset
+            for (const key in props.uniforms) {
+                const uniform = props.uniforms[key]
+                const newValue = preset[key]
+                if (isColorProp(uniform)) {
+                    props.material.uniforms[key].value = new THREE.Color(newValue)
+                } else if (isVec2Prop(uniform)) {
+                    props.material.uniforms[key].value = new THREE.Vector2(newValue.x, newValue.y)
+                } else {
+                    props.material.uniforms[key].value = newValue
+                }
+            }
+            gui.controllersRecursive().forEach((controller) => {
+                controller.updateDisplay()
+            })
+        }
 
-            gui.add(props.material.uniforms[key].value, 'y', min, max, step).name(`${key}.y`)
-        } else if (isNumberProp(uniform)) {
-            const { min = 0, max = 1, step = 0.01 } = uniform
-            gui.add(props.material.uniforms[key], 'value', min, max, step).name(key)
+        if (props.presets) {
+            let presetsObj = { preset: 'default' }
+            gui.add(presetsObj, 'preset', ['default', ...props.presets.map((_, i) => i)])
+                .name('Presets')
+                .onChange((value: string) => {
+                    setPreset(value)
+                })
         } else {
-            gui.add(props.material.uniforms[key], 'value').name(key)
+            gui.add(
+                {
+                    reset: () => {
+                        setPreset('default')
+                    },
+                },
+                'reset'
+            )
         }
     }
 
@@ -100,42 +137,9 @@ onMounted(() => {
         const sizeFolder = gui.addFolder('size')
         sizeFolder.add(sizesRef.value, 'x', 0, 2000, 1).name('width')
         sizeFolder.add(sizesRef.value, 'y', 0, 2000, 1).name('height')
-    }
 
-    const setPreset = (value: string) => {
-        const preset = props.presets?.[+value] ?? defaultPreset
-        for (const key in props.uniforms) {
-            const uniform = props.uniforms[key]
-            const newValue = preset[key]
-            if (isColorProp(uniform)) {
-                props.material.uniforms[key].value = new THREE.Color(newValue)
-            } else if (isVec2Prop(uniform)) {
-                props.material.uniforms[key].value = new THREE.Vector2(newValue.x, newValue.y)
-            } else {
-                props.material.uniforms[key].value = newValue
-            }
-        }
-        gui.controllersRecursive().forEach((controller) => {
-            controller.updateDisplay()
-        })
-    }
-
-    if (props.presets) {
-        let presetsObj = { preset: 'default' }
-        gui.add(presetsObj, 'preset', ['default', ...props.presets.map((_, i) => i)])
-            .name('Presets')
-            .onChange((value: string) => {
-                setPreset(value)
-            })
-    } else {
-        gui.add(
-            {
-                reset: () => {
-                    setPreset('default')
-                },
-            },
-            'reset'
-        )
+        sizeFolder.add(props.material.uniforms.u_resolution.value, 'x').listen()
+        sizeFolder.add(props.material.uniforms.u_resolution.value, 'y').listen()
     }
 })
 
