@@ -16,7 +16,9 @@ interface Props {
     uniforms?: UniformsRenamed | null
     material: THREE.ShaderMaterial
     presets?: ShaderInfo['presets'] | null
+    camera?: THREE.PerspectiveCamera | null
     sizes?: { x: number; y: number }
+    mesh?: THREE.Mesh | null
     pr?: number
 }
 const props = defineProps<Props>()
@@ -126,6 +128,25 @@ onMounted(() => {
             .onChange((val: number) => (prRef.value = val))
         // sizeFolder.add(props.material.uniforms.u_resolution.value, 'x').listen()
         // sizeFolder.add(props.material.uniforms.u_resolution.value, 'y').listen()
+    }
+
+    if (props.camera) {
+        const camFolder = gui.addFolder('camera')
+        camFolder.add(props.camera.position, 'x', -5, 5, 0.01).listen()
+        camFolder.add(props.camera.position, 'y', -5, 5, 0.01).listen()
+        camFolder.add(props.camera.position, 'z', -5, 5, 0.01).listen()
+    }
+
+    if (props.mesh) {
+        const meshFolder = gui.addFolder('mesh')
+        meshFolder.add(props.mesh.position, 'x', -5, 5, 0.01).listen()
+        meshFolder.add(props.mesh.position, 'y', -5, 5, 0.01).listen()
+        meshFolder.add(props.mesh.position, 'z', -5, 5, 0.01).listen()
+
+        const scaleFolder = meshFolder.addFolder('scale')
+        scaleFolder.add(props.mesh.scale, 'x', 0, 5, 0.1).listen()
+        scaleFolder.add(props.mesh.scale, 'y', 0, 5, 0.1).listen()
+        scaleFolder.add(props.mesh.scale, 'z', 0, 5, 0.1).listen()
     }
 })
 

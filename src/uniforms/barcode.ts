@@ -1,4 +1,4 @@
-import { ShaderUniform, type ShaderInfo } from '../types/types'
+import type { ShaderUniform, ShaderInfo } from '../types/types'
 
 const uniforms = {
     u_doDistort: {

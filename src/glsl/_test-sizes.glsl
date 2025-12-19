@@ -6,28 +6,22 @@ uniform vec2 u_viewport;
 uniform float u_time;
 uniform float u_pr;
 
+varying vec4 vModelPosition;
+varying vec4 vProjectionPosition;
+varying vec2 vPosition;
+
+varying vec2 vUv;
+
 #include "lygia/generative/random.glsl"
 
 void main() {
 
-	vec2 uv1 = gl_FragCoord.xy / u_resolution.xy;
-	// uv1.x *= u_resolution.x / u_resolution.y;
+	vec2 st = gl_FragCoord.xy / u_resolution.xy;
+	// st.x *= u_resolution.x / u_resolution.y;
 
-	vec2 pixels = uv1 * u_viewport;
+	vec2 px = st * u_viewport;
+	px /= 100.0;
+	px = fract(px);
 
-	vec2 div = pixels;
-	div /= 30.0;
-	vec2 intdiv = floor(div);
-	vec2 fractd = fract(div);
-	fractd *= random(intdiv);
-	fractd *= 2.0;
-	fractd -= 0.5;
-
-	float dist = 1.0 - distance(fractd, vec2(0.5));
-
-	float v = random(div + u_time);
-
-	vec3 col = vec3(dist);
-
-	gl_FragColor = vec4(col, 1.0);
+	gl_FragColor = vec4(vec3(px.x), 1.0);
 }

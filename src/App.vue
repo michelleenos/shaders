@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import SketchesList from './components/SketchesList.vue'
 import { useWindowSize } from '@vueuse/core'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import Toggle from './components/Toggle.vue'
+import { useRoute } from 'vue-router'
+import { p } from 'vue-router/dist/router-CWoNjPRp.mjs'
 
+const route = useRoute()
 const windowSize = useWindowSize()
-const openSidebar = ref(false)
+const openSidebar = ref(true)
 
 const breakpoint = 900
 
@@ -66,6 +69,13 @@ function onSidebarLeave(elem: Element, done: () => void) {
                 <RouterView />
             </div>
         </div>
+        <div class="app-bottombar">
+            <p>created by <a href="https://michelleenos.com" target="_blank">michelle enos</a></p>
+            <p>✦</p>
+            <p>
+                <a href="https://github.com/michelleenos/shaders" target="_blank">view on github</a>
+            </p>
+        </div>
     </div>
 </template>
 
@@ -79,7 +89,7 @@ function onSidebarLeave(elem: Element, done: () => void) {
     position: relative;
     display: grid;
     grid-template-columns: 100%;
-    grid-template-rows: 35px 1fr;
+    grid-template-rows: 35px 1fr 35px;
 
     .app-topbar {
         grid-area: 1 / 1;
@@ -89,6 +99,10 @@ function onSidebarLeave(elem: Element, done: () => void) {
         grid-column: 1;
         grid-row: 2;
         justify-self: start;
+    }
+
+    .app-bottombar {
+        grid-area: 3 / 1;
     }
 }
 
@@ -114,6 +128,26 @@ function onSidebarLeave(elem: Element, done: () => void) {
         color: #ccc;
         font-size: 1.2rem;
         margin: 0;
+    }
+}
+
+.app-bottombar {
+    // background: color.scale(colors.$purple, $lightness: 50%, $alpha: -20%);
+    background: #070707;
+    // color: #000;
+    padding: 0 Min(5%, 2rem);
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    justify-content: end;
+    column-gap: Min(5%, 1rem);
+    p:nth-child(2) {
+        font-size: 0.8em;
+    }
+    a {
+        color: var(--purple);
+        // color: #ff5b5b;
+        // color: color.adjust(colors.$red, $lightness: 10%);
     }
 }
 

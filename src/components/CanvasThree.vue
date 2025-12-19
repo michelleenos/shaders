@@ -10,10 +10,21 @@ import { cleanupUniforms, findShaderError } from '../utils/three-utils'
 const vertexShader = `
     varying vec2 vPosition;
     varying vec2 vUv;
+    varying vec4 vViewPosition;
+    varying vec4 vModelPosition;
+    varying vec4 vProjectionPosition;
     void main() {
         vPosition = position.xy;
         vUv = uv;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+
+        vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+        vec4 viewPosition = viewMatrix * modelPosition;
+        vec4 projectionPosition = projectionMatrix * viewPosition;
+
+        vViewPosition = viewPosition;
+        vModelPosition = modelPosition;
+        vProjectionPosition = projectionPosition;
+        gl_Position = projectionPosition;
     }
     `
 
@@ -33,6 +44,7 @@ const camera: Ref<THREE.PerspectiveCamera | null> = ref(null)
 const loader = new THREE.TextureLoader()
 const scene = new THREE.Scene()
 const shaderMaterial: Ref<THREE.ShaderMaterial | null> = ref(null)
+const mesh: Ref<THREE.Mesh | null> = ref(null)
 const clock: Ref<THREE.Clock | null> = ref(null)
 const animation: Ref<null | number> = ref(null)
 
@@ -69,14 +81,14 @@ onMounted(() => {
             u_viewport: { value: { x, y } },
         },
     })
-    scene.add(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shaderMaterial.value))
+    const meshInst = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shaderMaterial.value)
+    mesh.value = meshInst
+    scene.add(meshInst)
     clock.value = new THREE.Clock()
 
     THREE.ColorManagement.enabled = true
     renderer.value = new THREE.WebGLRenderer({ canvas: canvas.value, antialias: true })
     renderer.value.outputColorSpace = THREE.SRGBColorSpace
-    renderer.value.setPixelRatio(pr.value)
-    renderer.value.setSize(x, y)
 
     renderer.value.debug.onShaderError = () => {
         hasShaderError.value = true
@@ -85,9 +97,13 @@ onMounted(() => {
         shaderErrorContent.value = err
     }
 
-    shaderMaterial.value.uniforms.u_pr.value = pr.value
-    shaderMaterial.value.uniforms.u_resolution.value.x = renderer.value.domElement.width
-    shaderMaterial.value.uniforms.u_resolution.value.y = renderer.value.domElement.height
+    updateSizes(sizes.value.x, sizes.value.y)
+    // renderer.value.setPixelRatio(pr.value)
+    // renderer.value.setSize(x, y)
+
+    // shaderMaterial.value.uniforms.u_pr.value = pr.value
+    // shaderMaterial.value.uniforms.u_resolution.value.x = renderer.value.domElement.width
+    // shaderMaterial.value.uniforms.u_resolution.value.y = renderer.value.domElement.height
 })
 
 onUnmounted(() => {
@@ -160,25 +176,23 @@ watch(
     (value) => {
         const { x, y } = value
         updateSizes(x, y)
-
-        // if (camera.value && renderer.value && shaderMaterial.value) {
-        //     camera.value.aspect = x / y
-        //     camera.value.updateProjectionMatrix()
-
-        //     renderer.value.setSize(x, y)
-
-        //     shaderMaterial.value.uniforms.u_resolution.value.x = renderer.value.domElement.width
-        //     shaderMaterial.value.uniforms.u_resolution.value.y = renderer.value.domElement.height
-
-        //     shaderMaterial.value.uniforms.u_viewport.value.x = x
-        //     shaderMaterial.value.uniforms.u_viewport.value.y = y
-        // }
     },
     { deep: true }
 )
 
+const meshToCanvasSize = () => {
+    if (!camera.value || !mesh.value) return
+
+    const camZ = camera.value.position.z - mesh.value.position.z
+    const fov = camera.value.fov
+    let h = camZ * Math.tan(fov * (Math.PI / 180) * 0.5) * 2
+    mesh.value.scale.y = h
+    mesh.value.scale.x = h * camera.value.aspect
+}
+
 const updateSizes = (x: number, y: number) => {
     if (camera.value && renderer.value && shaderMaterial.value) {
+        console.log('updating sizes')
         camera.value.aspect = x / y
         camera.value.updateProjectionMatrix()
 
@@ -189,6 +203,8 @@ const updateSizes = (x: number, y: number) => {
 
         shaderMaterial.value.uniforms.u_viewport.value.x = x
         shaderMaterial.value.uniforms.u_viewport.value.y = y
+
+        meshToCanvasSize()
     }
 }
 
@@ -269,7 +285,9 @@ const tick = () => {
                     v-model:pr="pr"
                     :presets="presets"
                     :uniforms="uniforms"
-                    :material="shaderMaterial" />
+                    :material="shaderMaterial"
+                    :mesh="mesh"
+                    :camera="camera" />
                 <GuiThree
                     v-else
                     :presets="presets"
