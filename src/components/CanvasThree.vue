@@ -22,8 +22,9 @@ const route = useRoute()
 const theShader = ref(null)
 const error: Ref<null | unknown> = ref(null)
 
-const baseSizes = { x: 600, y: 600 }
+const baseSizes = { x: 700, y: 700 }
 const sizes = ref({ ...baseSizes })
+const pr = ref(1)
 const sizeControls = ref(false)
 
 const canvas: Ref<HTMLCanvasElement | null> = ref(null)
@@ -54,7 +55,7 @@ onMounted(() => {
 
     const { x, y } = sizes.value
 
-    const pr = Math.min(window.devicePixelRatio, 2)
+    pr.value = Math.min(window.devicePixelRatio, 2)
     camera.value = new THREE.PerspectiveCamera(10, x / y, 0.1, 10)
     camera.value.aspect = x / y
     camera.value.position.z = 1
@@ -63,8 +64,9 @@ onMounted(() => {
         uniforms: {
             u_resolution: { value: { x: x, y: y } },
             u_time: { value: 0 },
-            u_pr: { value: pr },
+            u_pr: { value: pr.value },
             u_mouse: { value: { x: 0, y: 0 } },
+            u_viewport: { value: { x, y } },
         },
     })
     scene.add(new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shaderMaterial.value))
@@ -73,7 +75,7 @@ onMounted(() => {
     THREE.ColorManagement.enabled = true
     renderer.value = new THREE.WebGLRenderer({ canvas: canvas.value, antialias: true })
     renderer.value.outputColorSpace = THREE.SRGBColorSpace
-    renderer.value.setPixelRatio(pr)
+    renderer.value.setPixelRatio(pr.value)
     renderer.value.setSize(x, y)
 
     renderer.value.debug.onShaderError = () => {
@@ -83,7 +85,7 @@ onMounted(() => {
         shaderErrorContent.value = err
     }
 
-    shaderMaterial.value.uniforms.u_pr.value = pr
+    shaderMaterial.value.uniforms.u_pr.value = pr.value
     shaderMaterial.value.uniforms.u_resolution.value.x = renderer.value.domElement.width
     shaderMaterial.value.uniforms.u_resolution.value.y = renderer.value.domElement.height
 })
@@ -156,21 +158,47 @@ watchEffect(async () => {
 watch(
     sizes,
     (value) => {
-        console.log('update sizes')
         const { x, y } = value
+        updateSizes(x, y)
 
-        if (camera.value && renderer.value && shaderMaterial.value) {
-            camera.value.aspect = x / y
-            camera.value.updateProjectionMatrix()
+        // if (camera.value && renderer.value && shaderMaterial.value) {
+        //     camera.value.aspect = x / y
+        //     camera.value.updateProjectionMatrix()
 
-            renderer.value.setSize(x, y)
+        //     renderer.value.setSize(x, y)
 
-            shaderMaterial.value.uniforms.u_resolution.value.x = renderer.value.domElement.width
-            shaderMaterial.value.uniforms.u_resolution.value.y = renderer.value.domElement.height
-        }
+        //     shaderMaterial.value.uniforms.u_resolution.value.x = renderer.value.domElement.width
+        //     shaderMaterial.value.uniforms.u_resolution.value.y = renderer.value.domElement.height
+
+        //     shaderMaterial.value.uniforms.u_viewport.value.x = x
+        //     shaderMaterial.value.uniforms.u_viewport.value.y = y
+        // }
     },
     { deep: true }
 )
+
+const updateSizes = (x: number, y: number) => {
+    if (camera.value && renderer.value && shaderMaterial.value) {
+        camera.value.aspect = x / y
+        camera.value.updateProjectionMatrix()
+
+        renderer.value.setSize(x, y)
+
+        shaderMaterial.value.uniforms.u_resolution.value.x = renderer.value.domElement.width
+        shaderMaterial.value.uniforms.u_resolution.value.y = renderer.value.domElement.height
+
+        shaderMaterial.value.uniforms.u_viewport.value.x = x
+        shaderMaterial.value.uniforms.u_viewport.value.y = y
+    }
+}
+
+watch(pr, (newVal) => {
+    if (renderer.value && shaderMaterial.value) {
+        renderer.value.setPixelRatio(newVal)
+        shaderMaterial.value.uniforms.u_pr.value = newVal
+        updateSizes(sizes.value.x, sizes.value.y)
+    }
+})
 
 const setTextures = () => {
     if (!textures.value || !shaderMaterial.value) return
@@ -234,12 +262,20 @@ const tick = () => {
             </div>
             <div v-if="error" class="error">{{ error }}</div>
             <canvas id="sandbox" ref="canvas"></canvas>
-            <GuiThree
-                v-if="shaderMaterial && uniforms"
-                :sizes="sizeControls ? sizes : undefined"
-                :presets="presets"
-                :uniforms="uniforms"
-                :material="shaderMaterial" />
+            <template v-if="shaderMaterial && uniforms">
+                <GuiThree
+                    v-if="sizeControls"
+                    v-model:sizes="sizes"
+                    v-model:pr="pr"
+                    :presets="presets"
+                    :uniforms="uniforms"
+                    :material="shaderMaterial" />
+                <GuiThree
+                    v-else
+                    :presets="presets"
+                    :uniforms="uniforms"
+                    :material="shaderMaterial" />
+            </template>
         </div>
     </div>
 </template>

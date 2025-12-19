@@ -2,17 +2,14 @@
 import GUI from 'lil-gui'
 import * as THREE from 'three'
 import {
-    UniformColor,
-    ShaderUniform,
-    UniformNumber,
-    UniformVector2,
     Uniforms as UniformsRenamed,
     ShaderInfo,
     UniformsPreset,
+    isColorProp,
+    isVec2Prop,
+    isNumberProp,
 } from '../types/types'
 import { onUnmounted, onMounted, ref, watch } from 'vue'
-
-// const sizes = defineModel<{ x: number; y: number }>('sizes')
 
 let gui: GUI
 interface Props {
@@ -20,12 +17,15 @@ interface Props {
     material: THREE.ShaderMaterial
     presets?: ShaderInfo['presets'] | null
     sizes?: { x: number; y: number }
+    pr?: number
 }
 const props = defineProps<Props>()
 
 const sizesRef = ref<Props['sizes']>(props.sizes)
+const prRef = ref(props.pr)
 const emits = defineEmits<{
     'update:sizes': [value: Props['sizes']]
+    'update:pr': [value: number]
 }>()
 
 watch(
@@ -45,25 +45,14 @@ watch(
     { deep: true }
 )
 
-watch(
-    sizesRef,
-    (newSizes) => {
-        emits('update:sizes', newSizes)
-    },
-    { deep: true }
-)
+watch(sizesRef, (newSizes) => emits('update:sizes', newSizes), { deep: true })
 
-const isColorProp = (prop: ShaderUniform): prop is UniformColor => {
-    return prop.value instanceof THREE.Color
-}
-
-const isVec2Prop = (prop: ShaderUniform): prop is UniformVector2 => {
-    return prop.value instanceof THREE.Vector2
-}
-
-const isNumberProp = (prop: ShaderUniform): prop is UniformNumber => {
-    return typeof prop.value === 'number'
-}
+watch(prRef, (newVal) => {
+    console.log(newVal, 'new PR')
+    if (newVal) {
+        emits('update:pr', newVal)
+    }
+})
 
 onMounted(() => {
     gui = new GUI()
@@ -118,18 +107,9 @@ onMounted(() => {
             let presetsObj = { preset: 'default' }
             gui.add(presetsObj, 'preset', ['default', ...props.presets.map((_, i) => i)])
                 .name('Presets')
-                .onChange((value: string) => {
-                    setPreset(value)
-                })
+                .onChange((value: string) => setPreset(value))
         } else {
-            gui.add(
-                {
-                    reset: () => {
-                        setPreset('default')
-                    },
-                },
-                'reset'
-            )
+            gui.add({ reset: () => setPreset('default') }, 'reset')
         }
     }
 
@@ -138,8 +118,14 @@ onMounted(() => {
         sizeFolder.add(sizesRef.value, 'x', 0, 2000, 1).name('width')
         sizeFolder.add(sizesRef.value, 'y', 0, 2000, 1).name('height')
 
-        sizeFolder.add(props.material.uniforms.u_resolution.value, 'x').listen()
-        sizeFolder.add(props.material.uniforms.u_resolution.value, 'y').listen()
+        // sizeFolder.add(props.material.uniforms.u_time, 'value').name('time').listen()
+
+        sizeFolder
+            .add(prRef, 'value', 1, 3, 1)
+            .name('pixelRatio')
+            .onChange((val: number) => (prRef.value = val))
+        // sizeFolder.add(props.material.uniforms.u_resolution.value, 'x').listen()
+        // sizeFolder.add(props.material.uniforms.u_resolution.value, 'y').listen()
     }
 })
 

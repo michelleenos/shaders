@@ -78,6 +78,7 @@ const uniforms: Uniforms23123 = {
 
 const ShaderInfo: ShaderInfo<keyof typeof uniforms> = {
     uniforms,
+    sizeControls: true,
     presets: [
         {
             u_speedColor: 0.25,

@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-const defaultSkipUniforms = ['u_resolution', 'u_time', 'u_pr', 'u_mouse']
+const defaultSkipUniforms = ['u_resolution', 'u_time', 'u_pr', 'u_mouse', 'u_viewport']
 
 export const cleanupUniforms = (
     material: THREE.ShaderMaterial,

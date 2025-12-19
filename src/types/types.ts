@@ -45,3 +45,15 @@ export interface ShaderInfo<T extends string | number = string> {
     textures?: { [key: string]: UniformTexture }
     sizeControls?: boolean
 }
+
+export const isColorProp = (prop: ShaderUniform): prop is UniformColor => {
+    return prop.value instanceof THREE.Color
+}
+
+export const isVec2Prop = (prop: ShaderUniform): prop is UniformVector2 => {
+    return prop.value instanceof THREE.Vector2
+}
+
+export const isNumberProp = (prop: ShaderUniform): prop is UniformNumber => {
+    return typeof prop.value === 'number'
+}
