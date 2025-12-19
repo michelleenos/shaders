@@ -49,7 +49,7 @@
 ```ts
 // src/uniforms/my-shader.ts
 import * as THREE from 'three'
-import type { ShaderUniform, ShaderInfo } from '../types/types'
+import type { ShaderUniform, ShaderInfo } from '../types/uniforms'
 
 const uniforms = {
     u_colorDark: { value: new THREE.Color('#111') },
@@ -122,7 +122,7 @@ void main(){
 
 ```ts
 import * as THREE from 'three'
-import type { ShaderInfo, ShaderUniform } from '../types/types'
+import type { ShaderInfo, ShaderUniform } from '../types/uniforms'
 
 const uniforms = {
     u_colorDark: { value: new THREE.Color('#111') },

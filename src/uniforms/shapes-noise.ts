@@ -1,5 +1,4 @@
-import * as THREE from 'three'
-import { type ShaderInfo } from '../types/types'
+import { type ShaderInfo } from '../types/uniforms'
 
 const uniforms = {
     u_versionOverlap: {
@@ -7,7 +6,7 @@ const uniforms = {
     },
 }
 
-const ShaderInfo: ShaderInfo<keyof typeof uniforms> = {
+const ShaderInfo: ShaderInfo<typeof uniforms> = {
     uniforms,
 }
 

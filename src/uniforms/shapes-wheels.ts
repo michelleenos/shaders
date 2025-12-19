@@ -1,4 +1,4 @@
-import { type ShaderInfo } from '../types/types'
+import { type ShaderInfo } from '../types/uniforms'
 
 const uniforms = {
     u_outerEdge1: {
@@ -92,7 +92,7 @@ const uniforms = {
     u_inner: { value: true },
 }
 
-const shaderInfo: ShaderInfo<keyof typeof uniforms> = {
+const shaderInfo: ShaderInfo<typeof uniforms> = {
     uniforms,
     presets: [
         {

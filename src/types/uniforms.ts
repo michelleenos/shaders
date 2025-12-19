@@ -31,17 +31,19 @@ export type ShaderUniform = (UniformNumber | UniformColor | UniformVector2 | Uni
     hide?: boolean
 }
 
-export type Uniforms<T extends string | number = string> = {
+export type Uniforms<T extends PropertyKey = PropertyKey> = {
     [key in T]: ShaderUniform
 }
 
-export type UniformsPreset<T extends string | number = string> = {
+export type UniformsPreset<T extends PropertyKey> = {
     [key in T]?: any
 }
 
-export interface ShaderInfo<T extends string | number = string> {
-    uniforms: Uniforms<T>
-    presets?: UniformsPreset<T>[]
+export interface ShaderInfo<
+    T extends Record<string, ShaderUniform> = Record<string, ShaderUniform>
+> {
+    uniforms: Uniforms<keyof T>
+    presets?: UniformsPreset<keyof T>[]
     textures?: { [key: string]: UniformTexture }
     sizeControls?: boolean
 }

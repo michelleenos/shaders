@@ -1,4 +1,4 @@
-import { ShaderInfo } from '../types/types'
+import { ShaderInfo } from '../types/uniforms'
 
 const uniforms = {
     u_offsetXi: {
@@ -27,8 +27,8 @@ const uniforms = {
     },
 }
 
-const ShaderInfo: ShaderInfo<keyof typeof uniforms> = {
+const shaderInfo: ShaderInfo<typeof uniforms> = {
     uniforms,
 }
 
-export default ShaderInfo
+export default shaderInfo

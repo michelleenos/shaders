@@ -3,7 +3,7 @@ import GuiThree from './GuiThree.vue'
 import * as THREE from 'three'
 import { useRoute } from 'vue-router'
 import { ref, type Ref, onMounted, onUnmounted, watchEffect, watch } from 'vue'
-import { Uniforms, ShaderInfo } from '../types/types'
+import { Uniforms, ShaderInfo } from '../types/uniforms'
 import { useMouseInElement } from '@vueuse/core'
 import { cleanupUniforms, findShaderError } from '../utils/three-utils'
 
@@ -58,7 +58,7 @@ const shaderErrorContent: Ref<string | null> = ref(null)
 const {
     elementX: mouseX,
     elementY: mouseY,
-    elementWidth: canvasWidth,
+    elementWidth: _canvasWidth,
     elementHeight: canvasHeight,
 } = useMouseInElement(canvas)
 
@@ -180,7 +180,7 @@ watch(
     { deep: true }
 )
 
-const meshToCanvasSize = () => {
+const planeToCanvasSize = () => {
     if (!camera.value || !mesh.value) return
 
     const camZ = camera.value.position.z - mesh.value.position.z
@@ -204,7 +204,7 @@ const updateSizes = (x: number, y: number) => {
         shaderMaterial.value.uniforms.u_viewport.value.x = x
         shaderMaterial.value.uniforms.u_viewport.value.y = y
 
-        meshToCanvasSize()
+        planeToCanvasSize()
     }
 }
 

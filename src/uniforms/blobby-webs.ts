@@ -1,4 +1,4 @@
-import { ShaderInfo } from '../types/types'
+import { ShaderInfo } from '../types/uniforms'
 import * as THREE from 'three'
 
 // ['#fefaec', '#f398c3', '#cf3895', '#a0d28d', '#06b4b0', '#fed000', '#FF8552'],
@@ -50,7 +50,7 @@ const uniforms = {
     },
 }
 
-const shaderInfo: ShaderInfo<keyof typeof uniforms> = {
+const shaderInfo: ShaderInfo<typeof uniforms> = {
     uniforms,
 }
 

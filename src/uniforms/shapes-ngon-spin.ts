@@ -1,4 +1,4 @@
-import type { Uniforms, ShaderInfo } from '../types/types'
+import type { ShaderInfo, ShaderUniform } from '../types/uniforms'
 
 const uniforms = {
     u_duration: {
@@ -25,10 +25,10 @@ const uniforms = {
         max: 10,
         step: 0.01,
     },
-}
+} satisfies { [key: string]: ShaderUniform }
 
-const ShaderInfo: ShaderInfo<typeof uniforms> = {
+const shaderInfo: ShaderInfo<typeof uniforms> = {
     uniforms,
 }
 
-export default ShaderInfo
+export default shaderInfo

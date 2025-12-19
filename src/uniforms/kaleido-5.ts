@@ -1,19 +1,19 @@
-import { UniformNumber, ShaderInfo } from '../types/types'
+import type { ShaderInfo, ShaderUniform } from '../types/uniforms'
 
-interface Uniforms23123 {
-    u_speedColor: UniformNumber
-    u_speedLines: UniformNumber
-    u_fractAmt: UniformNumber
-    u_multCos: UniformNumber
-    u_multSin: UniformNumber
-    u_divBy: UniformNumber
-    u_divTop: UniformNumber
-    u_pow: UniformNumber
-    u_doFractAtEnd: UniformNumber
-    u_doMinAbsAtEnd: UniformNumber
-}
+// interface Uniforms23123 {
+//     u_speedColor: UniformNumber
+//     u_speedLines: UniformNumber
+//     u_fractAmt: UniformNumber
+//     u_multCos: UniformNumber
+//     u_multSin: UniformNumber
+//     u_divBy: UniformNumber
+//     u_divTop: UniformNumber
+//     u_pow: UniformNumber
+//     u_doFractAtEnd: UniformNumber
+//     u_doMinAbsAtEnd: UniformNumber
+// }
 
-const uniforms: Uniforms23123 = {
+const uniforms = {
     u_speedColor: {
         value: 0.66,
         min: 0,
@@ -74,9 +74,9 @@ const uniforms: Uniforms23123 = {
         max: 1,
         step: 1,
     },
-}
+} satisfies { [key: string]: ShaderUniform }
 
-const ShaderInfo: ShaderInfo<keyof typeof uniforms> = {
+const shaderInfo: ShaderInfo<typeof uniforms> = {
     uniforms,
     sizeControls: true,
     presets: [
@@ -107,4 +107,4 @@ const ShaderInfo: ShaderInfo<keyof typeof uniforms> = {
     ],
 }
 
-export default ShaderInfo
+export default shaderInfo

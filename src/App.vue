@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import SketchesList from './components/SketchesList.vue'
 import { useWindowSize } from '@vueuse/core'
-import { computed, onMounted, ref, watch } from 'vue'
-import Toggle from './components/Toggle.vue'
-import { useRoute } from 'vue-router'
-import { p } from 'vue-router/dist/router-CWoNjPRp.mjs'
+import { computed, ref, watch } from 'vue'
 
-const route = useRoute()
+import SketchesList from './components/SketchesList.vue'
+import Toggle from './components/Toggle.vue'
+
 const windowSize = useWindowSize()
 const openSidebar = ref(true)
 

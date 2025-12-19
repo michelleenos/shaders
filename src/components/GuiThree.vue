@@ -8,7 +8,7 @@ import {
     isColorProp,
     isVec2Prop,
     isNumberProp,
-} from '../types/types'
+} from '../types/uniforms'
 import { onUnmounted, onMounted, ref, watch } from 'vue'
 
 let gui: GUI

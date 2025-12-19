@@ -1,4 +1,4 @@
-import { ShaderInfo } from '../types/types'
+import { ShaderInfo } from '../types/uniforms'
 
 const uniforms = {
     u_iterations: {
@@ -84,7 +84,7 @@ const uniforms = {
     },
 }
 
-const shaderInfo: ShaderInfo<keyof typeof uniforms> = {
+const shaderInfo: ShaderInfo<typeof uniforms> = {
     uniforms,
     presets: [
         {

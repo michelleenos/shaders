@@ -1,4 +1,4 @@
-import { ShaderInfo } from '../types/types'
+import { ShaderInfo } from '../types/uniforms'
 const shaderInfo: ShaderInfo = {
     sizeControls: true,
     uniforms: {},

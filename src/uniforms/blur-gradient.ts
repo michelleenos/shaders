@@ -1,4 +1,4 @@
-import { ShaderInfo } from '../types/types'
+import { ShaderInfo, ShaderUniform } from '../types/uniforms'
 import * as THREE from 'three'
 
 THREE.ColorManagement.enabled = true
@@ -56,8 +56,9 @@ const uniforms = {
     //     value: 0.005,
 
     // }
-}
-const shaderInfo: ShaderInfo<keyof typeof uniforms> = {
+} satisfies { [key: string]: ShaderUniform }
+
+const shaderInfo: ShaderInfo<typeof uniforms> = {
     uniforms,
     textures: {
         u_noisy: {

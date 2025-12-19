@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { type ShaderUniform, type ShaderInfo } from '../types/types'
+import { type ShaderUniform, type ShaderInfo } from '../types/uniforms'
 
 const uniforms = {
     u_duration: {
@@ -29,7 +29,7 @@ const uniforms = {
     },
 } satisfies { [key: string]: ShaderUniform }
 
-const ShaderInfo: ShaderInfo<keyof typeof uniforms> = {
+const ShaderInfo: ShaderInfo<typeof uniforms> = {
     uniforms,
 }
 
