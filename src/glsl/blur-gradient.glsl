@@ -14,8 +14,7 @@ uniform float u_noiseFreq;
 uniform float u_noiseSpeed;
 uniform float u_noisePow;
 uniform float u_fizzIntensity;
-uniform float u_doFizz;
-uniform float u_doNoise;
+uniform float u_blurRadius;
 
 uniform vec3 u_colorDark;
 uniform vec3 u_colorLight;
@@ -37,7 +36,9 @@ mat2 rotate2d(float _angle) {
 #define PI 3.14159265358979323846
 
 #include "lygia/generative/cnoise.glsl"
-#include "lygia/filter/gaussianBlur.glsl"
+#include "lygia/animation/easing/quartic.glsl"
+
+#include "lygia/color/blend/overlay.glsl"
 
 float fuzzy(in vec2 px) {
 	// divide into lil boxes u_fizzPx wide each
@@ -50,29 +51,42 @@ float fuzzy(in vec2 px) {
 	return r;
 }
 
-float noisy(in vec2 px) {
-	float v = cnoise(vec3(px * u_noiseFreq * 0.001, u_time * u_noiseSpeed));
+float noisy(in vec2 px, float freq) {
+	float v = cnoise(vec3(px * freq * 0.001, u_time * u_noiseSpeed));
 	v = v * 0.5 + 0.5;
-	v = pow(v, u_noisePow);
+	// v = pow(v, u_noisePow);
+	// v = quarticIn(v);
 
 	return v;
 }
 
+vec3 shade(in vec2 px) {
+	float fizz = 1.0 - fuzzy(px) * u_fizzIntensity;
+	float n = noisy(px, u_noiseFreq);
+	n = pow(n, u_noisePow);
+	vec3 c = mix(u_colorDark, u_colorLight, fizz * n);
+	return c;
+}
+
 void main() {
 	vec2 st = gl_FragCoord.xy / u_resolution.xy;
-
 	vec2 px = st * u_viewport;
 
-	float fizz = 1.0 - fuzzy(px) * u_fizzIntensity;
+	float blurPx = u_blurRadius;
 
-	float n = noisy(px);
+	vec3 c = shade(px) +
+		shade(px + vec2(blurPx, blurPx)) +
+		shade(px + vec2(0.0, blurPx)) +
+		shade(px + vec2(-blurPx, blurPx)) +
+		shade(px + vec2(-blurPx, 0.0)) +
+		shade(px + vec2(blurPx, 0.0)) +
+		shade(px + vec2(blurPx, -blurPx)) +
+		shade(px + vec2(0.0, -blurPx)) +
+		shade(px + vec2(-blurPx, -blurPx));
 
-	fizz = mix(1.0, fizz, u_doFizz);
-	n = mix(1.0, n, u_doNoise);
+	c /= 9.0;
 
-	vec3 col = mix(u_colorDark, u_colorLight, fizz * n);
-
-	gl_FragColor = vec4(col, 1.0);
+	gl_FragColor = vec4(c, 1.0);
 
 	#include <colorspace_fragment>
 	#include <tonemapping_fragment>

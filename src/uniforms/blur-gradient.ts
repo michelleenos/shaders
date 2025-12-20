@@ -8,7 +8,7 @@ const uniforms = {
         value: new THREE.Color('#261817'),
     },
     u_colorLight: {
-        value: new THREE.Color('#7C635A'),
+        value: new THREE.Color('#6b554d'),
     },
     u_fizzPx: {
         value: 5,
@@ -19,7 +19,7 @@ const uniforms = {
     u_fizzSpeed: {
         value: 15,
         min: 0,
-        max: 100,
+        max: 40,
         step: 0.5,
     },
     u_fizzIntensity: {
@@ -46,12 +46,18 @@ const uniforms = {
         max: 10,
         step: 0.1,
     },
-    u_doFizz: {
-        value: true,
+    u_blurRadius: {
+        value: 2,
+        min: 0,
+        max: 20,
+        step: 0.5,
     },
-    u_doNoise: {
-        value: true,
-    },
+    // u_doFizz: {
+    //     value: true,
+    // },
+    // u_doNoise: {
+    //     value: true,
+    // },
     // u_noiseFreq: {
     //     value: 0.005,
 

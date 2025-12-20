@@ -10,4 +10,14 @@ export default defineConfig({
         }),
         vue(),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    // separate threejs into its own chunk since index.js is quite large otherwise
+                    three: ['three'],
+                },
+            },
+        },
+    },
 })

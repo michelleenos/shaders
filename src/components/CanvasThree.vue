@@ -285,9 +285,7 @@ const tick = () => {
                     v-model:pr="pr"
                     :presets="presets"
                     :uniforms="uniforms"
-                    :material="shaderMaterial"
-                    :mesh="mesh"
-                    :camera="camera" />
+                    :material="shaderMaterial" />
                 <GuiThree
                     v-else
                     :presets="presets"
