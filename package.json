@@ -1,28 +1,29 @@
 {
-  "name": "shaders",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@types/node": "^20.19.27",
-    "@vueuse/core": "^10.11.1",
-    "lil-gui": "^0.19.2",
-    "sass": "^1.97.1",
-    "three": "^0.182.0",
-    "vite-plugin-glsl": "^1.5.5",
-    "vue": "^3.5.26",
-    "vue-router": "^4.6.4"
-  },
-  "devDependencies": {
-    "@types/three": "^0.182.0",
-    "@vitejs/plugin-vue": "^4.6.2",
-    "typescript": "^5.9.3",
-    "vite": "^4.5.14",
-    "vue-tsc": "^3.1.8"
-  }
+    "name": "shaders",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vue-tsc && vite build",
+        "build-pages": "NODE_ENV=production vite build --base=/shaders/",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@types/node": "^20.19.27",
+        "@vueuse/core": "^10.11.1",
+        "lil-gui": "^0.19.2",
+        "sass": "^1.97.1",
+        "three": "^0.182.0",
+        "vite-plugin-glsl": "^1.5.5",
+        "vue": "^3.5.26",
+        "vue-router": "^4.6.4"
+    },
+    "devDependencies": {
+        "@types/three": "^0.182.0",
+        "@vitejs/plugin-vue": "^4.6.2",
+        "typescript": "^5.9.3",
+        "vite": "^4.5.14",
+        "vue-tsc": "^3.1.8"
+    }
 }

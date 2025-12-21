@@ -10,7 +10,7 @@ export default defineConfig({
         }),
         vue(),
     ],
-    base: process.env.NODE_ENV === 'PRODUCTION' ? '/shaders' : '/',
+    // base: process.env.NODE_ENV === 'PRODUCTION' ? '/shaders/' : '/',
     build: {
         rollupOptions: {
             output: {

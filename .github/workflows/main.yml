@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
-      - run: pnpm run build
+      - run: pnpm run build-pages
       - name: Upload pages artifact
         id: deployment
         uses: actions/upload-pages-artifact@v3
