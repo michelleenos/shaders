@@ -1,5 +1,5 @@
 import { type ShaderInfo } from '../types/uniforms'
-import * as THREE from 'three'
+
 import { COLORS } from '../utils/colors'
 
 const uniforms = {

@@ -1,4 +1,3 @@
-import * as THREE from 'three'
 import { ShaderInfo, ShaderUniform } from '../types/uniforms'
 import { COLORS } from '../utils/colors'
 
