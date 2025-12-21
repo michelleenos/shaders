@@ -1,28 +1,30 @@
 name: Vite Build Vue App
 on:
-  push: 
-    branches: ['main']
+    push:
+        branches: ['main']
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    name: Build
-    steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
-    - name: Install pnpm
-      uses: pnpm/action-setup@v2
-      with: 
-        version: 10
-        run_install: true
-        cache: true
-    - name: Use Node.js 
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
-    - run: pnpm run build
-    - name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
-      with: 
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./dist
+    build:
+        runs-on: ubuntu-latest
+        name: Build
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v6
+              with:
+                  submodules: true
+            - name: Install pnpm
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 10
+                  run_install: true
+                  cache: true
+            - name: Use Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: 'pnpm'
+            - run: pnpm run build
+            - name: Deploy
+              uses: peaceiris/actions-gh-pages@v3
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_dir: ./dist
