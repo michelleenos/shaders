@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "vite",
         "build": "vue-tsc && vite build",
-        "build-pages": "NODE_ENV=production vite build --base=/shaders/",
+        "build-pages": "NODE_ENV=production vite build --base=/shaders/ && cp dist/index.html dist/404.html",
         "preview": "vite preview"
     },
     "dependencies": {
