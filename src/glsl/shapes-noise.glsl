@@ -7,13 +7,19 @@ uniform vec2 u_resolution;
 uniform float u_time;
 uniform float u_versionOverlap;
 
+uniform vec3 u_color1;
+uniform vec3 u_color2;
+uniform vec3 u_color3;
+
+uniform float u_managedColors;
+
 #define PI 3.14159265358979323846
 
 vec3 tearose = vec3(0.8828125, 0.7578125, 0.7734375);
-vec3 eggplant = vec3(0.4375, 0.28125, 0.33203125);
+vec3 purple = vec3(0.4375, 0.28125, 0.33203125);
 vec3 plum = vec3(0.609375, 0.32421875, 0.546875);
 vec3 violet = vec3(0.18359375, 0.00390625, 0.27734375);
-vec3 purple = vec3(0.21875, 0.07421875, 0.1171875);
+vec3 eggplant = vec3(0.21875, 0.07421875, 0.1171875);
 
 vec3 random3(vec3 c) {
   float j = 4096.0 * sin(dot(c, vec3(17.0, 59.4, 15.0)));
@@ -128,10 +134,20 @@ vec3 rects(vec2 _st) {
 
   float r = rect(fpos, vec2(0.9, 0.8));
 
-  vec3 col = eggplant;
-  col = mix(col, purple, one * r);
-  col = mix(col, purple, three * r);
-  col = mix(col, tearose, two * r);
+  vec3 col = vec3(0.0);
+  if(u_managedColors == 1.0) {
+    col = u_color2;
+    col = mix(col, u_color3, one * r);
+    col = mix(col, u_color3, three * r);
+    col = mix(col, u_color1, two * r);
+
+  } else {
+    col = purple;
+    col = mix(col, eggplant, one * r);
+    col = mix(col, eggplant, three * r);
+    col = mix(col, tearose, two * r);
+
+  }
 
   return col;
 }
@@ -139,11 +155,26 @@ vec3 rects(vec2 _st) {
 void main() {
   vec2 st = gl_FragCoord.xy / u_resolution.xy;
 
-  vec3 col = eggplant;
-  col = mix(col, purple, r1(st, u_time * 0.5));
-  col += purple * r2(st, u_time * 0.5);
+  vec3 col = vec3(0.0);
 
-  col = mix(rects(st), col, u_versionOverlap);
+  if(u_managedColors == 1.0) {
+    col = u_color3;
+    col = mix(col, u_color2, r1(st, u_time * 0.5));
+    col += u_color1 * r2(st, u_time * 0.5);
+
+    col = mix(rects(st), col, u_versionOverlap);
+
+  } else {
+    col = purple;
+    col = mix(col, eggplant, r1(st, u_time * 0.5));
+    col += eggplant * r2(st, u_time * 0.5);
+
+  }
 
   gl_FragColor = vec4(vec3(col), 1.0);
+
+  if(u_managedColors == 1.0) {
+
+    #include <colorspace_fragment>
+  }
 }

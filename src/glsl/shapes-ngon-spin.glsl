@@ -8,6 +8,9 @@ uniform vec2 u_resolution;
 uniform vec2 u_mouse;
 uniform float u_time;
 
+uniform vec3 u_colorDark;
+uniform vec3 u_colorLight;
+
 uniform float u_duration;
 uniform float u_iterations;
 uniform float u_sides;
@@ -67,5 +70,9 @@ void main() {
     d += f;
   }
 
-  gl_FragColor = vec4(vec3(d), 1.0);
+  vec3 col = mix(u_colorDark, u_colorLight, d);
+
+  gl_FragColor = vec4(col, 1.0);
+
+  #include <colorspace_fragment>
 }

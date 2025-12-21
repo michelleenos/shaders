@@ -18,7 +18,6 @@ const props = withDefaults(defineProps<{ open: boolean }>(), {
     background: transparent;
     position: relative;
     cursor: pointer;
-    color: var(--accent);
     z-index: 4;
 
     &:before,

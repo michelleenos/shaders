@@ -63,16 +63,10 @@ const uniforms = {
         step: 0.01,
     },
     u_doFractAtEnd: {
-        value: 0,
-        min: 0,
-        max: 1,
-        step: 1,
+        value: true,
     },
     u_doMinAbsAtEnd: {
-        value: 1,
-        min: 0,
-        max: 1,
-        step: 1,
+        value: true,
     },
 } satisfies { [key: string]: ShaderUniform }
 
@@ -102,6 +96,18 @@ const shaderInfo: ShaderInfo<typeof uniforms> = {
             u_divTop: 0.18,
             u_pow: -1.02,
             u_doFractAtEnd: 0,
+            u_doMinAbsAtEnd: 1,
+        },
+        {
+            u_speedColor: 0.25,
+            u_speedLines: 2.25,
+            u_fractAmt: 2.3,
+            u_multCos: 5.7,
+            u_multSin: 30,
+            u_divBy: 0.2,
+            u_divTop: 3,
+            u_pow: 1,
+            u_doFractAtEnd: 1,
             u_doMinAbsAtEnd: 1,
         },
     ],

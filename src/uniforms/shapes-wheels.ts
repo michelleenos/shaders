@@ -1,4 +1,5 @@
 import { type ShaderInfo } from '../types/uniforms'
+import { COLORS } from '../utils/colors'
 
 const uniforms = {
     u_outerEdge1: {
@@ -88,6 +89,9 @@ const uniforms = {
         max: 1,
         step: 0.01,
     },
+
+    u_color1: { value: COLORS.gray900 },
+    u_color2: { value: COLORS.purpley400 },
     u_outer: { value: true },
     u_inner: { value: true },
 }

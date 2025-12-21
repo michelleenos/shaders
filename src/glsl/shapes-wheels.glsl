@@ -24,13 +24,16 @@ uniform float u_innerSpeedSmall;
 uniform float u_innerOffset;
 uniform float u_innerMult;
 
+uniform vec3 u_color1;
+uniform vec3 u_color2;
+
 uniform float u_outer;
 uniform float u_inner;
 
 void main() {
 
   vec2 st = gl_FragCoord.xy / u_resolution.xy;
-  vec3 color = vec3(0.0);
+  // vec3 color = vec3(0.0);
 
   vec2 pos = st - vec2(0.5);
   float r = length(pos) * 2.0;
@@ -61,7 +64,14 @@ void main() {
   outr = smoothstep(outr, outr + 0.01, r);
   inr = 1.0 - smoothstep(inr, inr + 0.01, r);
 
-  color = vec3(inr * u_inner + outr * u_outer);
+  float c = inr * u_inner + outr * u_outer;
+
+  vec3 color = mix(u_color1, u_color2, c);
+
+  // color = vec3(inr * u_inner + outr * u_outer);
 
   gl_FragColor = vec4(color, 1.0);
+
+  #include <colorspace_fragment>
+  #include <tonemapping_fragment>
 }

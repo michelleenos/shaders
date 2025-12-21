@@ -1,4 +1,5 @@
 import type { ShaderInfo, ShaderUniform } from '../types/uniforms'
+import { COLORS } from '../utils/colors'
 
 const uniforms = {
     u_duration: {
@@ -24,6 +25,12 @@ const uniforms = {
         min: -10,
         max: 10,
         step: 0.01,
+    },
+    u_colorDark: {
+        value: COLORS.gray900,
+    },
+    u_colorLight: {
+        value: COLORS.gray100,
     },
 } satisfies { [key: string]: ShaderUniform }
 

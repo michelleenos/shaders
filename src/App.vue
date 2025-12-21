@@ -1,19 +1,33 @@
 <script setup lang="ts">
 import { useWindowSize } from '@vueuse/core'
-import { computed, ref, watch } from 'vue'
-
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import SketchesList from './components/SketchesList.vue'
 import Toggle from './components/Toggle.vue'
 
 const windowSize = useWindowSize()
-const openSidebar = ref(true)
+const openSidebar = ref(false)
+const theme = ref<'dark' | 'light'>('dark')
+const route = useRoute()
 
 const breakpoint = 900
 
 const isDesktop = computed(() => windowSize.width.value >= breakpoint)
 
+onMounted(() => {
+    if (window.location.pathname === '/') {
+        openSidebar.value = true
+    }
+})
+
+watch(route, (newVal) => {
+    console.log('new route', newVal.fullPath)
+    // if (newVal.fullPath )
+})
 watch(isDesktop, (newValue) => {
-    openSidebar.value = newValue
+    if (newValue) {
+        openSidebar.value = true
+    }
 })
 
 const toggleSidebar = () => {
@@ -49,21 +63,39 @@ function onSidebarLeave(elem: Element, done: () => void) {
         done()
     })
 }
+
+function setTheme(value: 'dark' | 'light') {
+    theme.value = value
+}
 </script>
 
 <template>
-    <div class="app-wrapper" :style="`--sketch-list-px: ${sketchListPx}`">
+    <div
+        :class="['app-wrapper', theme === 'dark' ? 'theme-dark' : 'theme-light']"
+        :style="`--sketch-list-px: ${sketchListPx}`">
         <div class="app-topbar">
             <Toggle @click="toggleSidebar" aria-controls="app-sidebar" :open="openSidebar" />
             <h1>shadercollection</h1>
+            <div class="theme-btns">
+                <button
+                    :class="['theme-btn', theme === 'dark' && 'active']"
+                    @click="setTheme('dark')">
+                    dark
+                </button>
+                <button
+                    :class="['theme-btn', theme === 'light' && 'active']"
+                    @click="setTheme('light')">
+                    light
+                </button>
+            </div>
         </div>
-        <div :class="['app-content', openSidebar && 'sidebar-open']">
+        <div :class="['app-main', openSidebar && 'sidebar-open']">
             <transition name="slide" @enter="onSidebarEnter" @leave="onSidebarLeave" :css="false">
                 <div v-if="openSidebar" class="app-sidebar" id="app-sidebar">
                     <SketchesList />
                 </div>
             </transition>
-            <div class="app-canvas">
+            <div class="canvas-wrap">
                 <RouterView />
             </div>
         </div>
@@ -81,29 +113,6 @@ function onSidebarLeave(elem: Element, done: () => void) {
 @use './styles/colors';
 @use 'sass:color';
 
-.grid-container {
-    height: 100%;
-    max-height: 100vh;
-    position: relative;
-    display: grid;
-    grid-template-columns: 100%;
-    grid-template-rows: 35px 1fr 35px;
-
-    .app-topbar {
-        grid-area: 1 / 1;
-        height: 100%;
-    }
-    .app-sidebar {
-        grid-column: 1;
-        grid-row: 2;
-        justify-self: start;
-    }
-
-    .app-bottombar {
-        grid-area: 3 / 1;
-    }
-}
-
 .app-wrapper {
     height: 100vh;
     max-height: 100vh;
@@ -113,7 +122,6 @@ function onSidebarLeave(elem: Element, done: () => void) {
 }
 
 .app-topbar {
-    background: #070707;
     padding-left: 1rem;
     padding-right: 1rem;
     display: flex;
@@ -123,51 +131,63 @@ function onSidebarLeave(elem: Element, done: () => void) {
     z-index: 9;
 
     h1 {
-        color: #ccc;
         font-size: 1.2rem;
         margin: 0;
     }
 }
 
-.app-bottombar {
-    // background: color.scale(colors.$purple, $lightness: 50%, $alpha: -20%);
-    background: #070707;
-    // color: #000;
-    padding: 0 Min(5%, 2rem);
+.theme-btns {
     display: flex;
     align-items: center;
-    font-size: 0.9rem;
-    justify-content: end;
-    column-gap: Min(5%, 1rem);
-    p:nth-child(2) {
+    background-color: var(--gray-200);
+    padding: 3px 3px;
+    box-shadow: inset 0px 0px 0px 2px var(--gray-200), inset 0px 0px 0px 3px var(--gray-800);
+
+    button {
+        // outline: 1px solid blue;
+        background: var(--gray-100);
+        border: none;
+        color: var(--gray-700);
+        font-weight: 600;
         font-size: 0.8em;
-    }
-    a {
-        color: var(--purple);
-        // color: #ff5b5b;
-        // color: color.adjust(colors.$red, $lightness: 10%);
+        line-height: 1;
+        padding: 3px 10px;
+        cursor: pointer;
+
+        &:hover,
+        &:focus {
+            background: var(--gray-50);
+        }
+        &.active {
+            // text-decoration: underline;
+            background: var(--gray-900);
+            color: var(--gray-100);
+        }
     }
 }
 
-.app-canvas {
-    padding: 1.5rem;
-    position: relative;
-}
-
-.app-content {
+.app-main {
     display: flex;
     height: 100%;
     max-height: 100%;
     overflow: hidden;
     position: relative;
+    .canvas-wrap {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+        position: relative;
+        overflow: auto;
+        width: calc(100% - 2rem);
+        margin-left: 1rem;
+        margin-right: 1rem;
+        height: 100%;
+    }
 }
 
 .app-sidebar {
     max-height: 100%;
+    height: 100%;
     position: absolute;
-    // background: rgba(255, 255, 255, 80%);
-    background: color.scale(colors.$purple, $lightness: 90%, $alpha: -20%);
-    backdrop-filter: blur(5px);
     padding-top: 1rem;
     padding-bottom: 1rem;
     display: block;
@@ -175,41 +195,7 @@ function onSidebarLeave(elem: Element, done: () => void) {
     overflow-y: auto;
     z-index: 9;
     scrollbar-gutter: stable;
-
-    @supports not selector(::-webkit-scrollbar) {
-        scrollbar-width: thin;
-        scrollbar-color: var(--plum) var(--purple-light);
-    }
-
-    &::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        // background-color: color.change(colors.$red, $alpha: 0.5);
-        background-color: transparent;
-        transition: background-color 200ms ease;
-        border-radius: 0px;
-    }
-
-    &:hover {
-        &::-webkit-scrollbar-thumb {
-            background-color: color.change(colors.$red, $alpha: 0.7);
-        }
-        // background-color: var(--plum-hover);
-    }
 }
-
-// .slide-enter-active,
-// .slide-leave-active {
-//     transition: all 0.2s ease;
-// }
-
-// .slide-enter-from,
-// .slide-leave-to {
-//     // transform: translateX(-100%);
-//     left: -100%;
-// }
 
 .app-canvas {
     overflow: auto;
@@ -219,32 +205,40 @@ function onSidebarLeave(elem: Element, done: () => void) {
     overflow: auto;
 }
 
-@media (min-width: 800px) {
-    .grid-container {
-        height: 100vh;
-        grid-template-columns: auto 1fr;
-        .grid-topbar {
-            grid-column: 1 / 3;
+@media (min-width: 900px) {
+    .app-main {
+        display: block;
+        // display: grid;
+        // grid-template-columns: 1fr;
+        // &.sidebar-open {
+        //     grid-template-columns: calc(var(--sketch-list-px) * 1px + 1px) 1fr;
+        //     .canvas-wrap {
+        //         grid-area: 1 / 2;
+        //     }
+        // }
+
+        .canvas-wrap {
+            margin-left: 1rem;
+            margin-right: 1rem;
+            width: calc(100% - 2rem);
         }
-        .grid-sidebar {
-            grid-area: 2 / 1;
-        }
-        .app-canvas {
-            grid-area: 2 / 2;
+
+        &.sidebar-open {
+            .canvas-wrap {
+                margin-left: calc(var(--sketch-list-px) * 1px + 1rem);
+                margin-right: 1rem;
+                width: calc(100% - 2rem - var(--sketch-list-px) * 1px);
+            }
         }
     }
-
     .app-sidebar {
-        position: relative;
+        position: absolute;
+        top: 0;
+        left: 0;
         height: 100%;
         overflow-y: auto;
         width: calc(var(--sketch-list-px) * 1px);
-    }
-    .app-content.sidebar-open {
-        .app-canvas {
-            width: calc(100% - (var(--sketch-list-px) * 1px));
-            // transform: translateX(20ch);
-        }
+        // flex: 0 0 calc(var(--sketch-list-px) * 1px);
     }
 }
 </style>

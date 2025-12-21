@@ -19,7 +19,6 @@ const keys = Object.keys(entries)
 
 <style scoped lang="scss">
 ul {
-    color: #000;
     --width-chars: calc((var(--sketch-list-px) - 20) * 0.104);
     margin: 0;
     list-style: none;
