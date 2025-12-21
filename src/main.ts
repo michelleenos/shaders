@@ -1,9 +1,9 @@
 import { createApp } from 'vue'
-import './styles/style.scss'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import App from './App.vue'
-import { createRouter, createWebHistory } from 'vue-router'
 import CanvasThree from './components/CanvasThree.vue'
 import Home from './components/Home.vue'
+import './styles/style.scss'
 
 const routes = [
     { path: '/sketches/:sketch', component: CanvasThree, props: true },
@@ -11,7 +11,8 @@ const routes = [
 ]
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
+    // history: createWebHistory(import.meta.env.BASE_URL),
+    history: createWebHashHistory(),
     routes,
 })
 
