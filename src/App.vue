@@ -12,16 +12,15 @@ const route = useRoute()
 
 const breakpoint = 900
 
-const isDesktop = computed(() => windowSize.width.value >= breakpoint)
-
 onMounted(() => {
-    if (window.location.pathname === '/') {
-        openSidebar.value = true
-    }
+    if (route.fullPath === '/') openSidebar.value = true
 })
 
+const isDesktop = computed(() => windowSize.width.value >= breakpoint)
+
 watch(route, (newVal) => {
-    console.log('new route', newVal.fullPath)
+    // console.log('new route', newVal.fullPath)
+    if (newVal.fullPath === '/') openSidebar.value = true
     // if (newVal.fullPath )
 })
 watch(isDesktop, (newValue) => {
