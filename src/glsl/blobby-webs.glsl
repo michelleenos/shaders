@@ -5,20 +5,21 @@ precision mediump float;
 uniform vec2 u_resolution;
 uniform float u_time;
 
-uniform vec3 u_c1;
-uniform vec3 u_c2;
-uniform vec3 u_c3;
-uniform vec3 u_c4;
-uniform vec3 u_c5;
-uniform vec3 u_c6;
-uniform vec3 u_c7;
-
 uniform float u_freq1;
 uniform float u_freq2;
 uniform float u_speed1;
 uniform float u_speed2;
 
 #include "lygia/generative/snoise"
+
+vec3 palette(float t) {
+    vec3 a = vec3(1.000, 0.618, 0.540);
+    vec3 b = vec3(-0.0, -0.5, -0.5);
+    vec3 c = vec3(2.000, 1.000, -1.5);
+    vec3 d = vec3(0.500, 0.2, -0.392);
+
+    return a + b * cos(6.28318 * (c * t + d));
+}
 
 void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
@@ -29,42 +30,15 @@ void main() {
     n2 = abs(n2);
     float n = n1 * n1 * n2 * n2;
     n = pow(n, 0.2);
-    n *= 7.0;
+    n *= 3.0;
 
-    // n = n * 0.5 + 0.5;
-    n = mod(n, 7.0);
+    n = mod(n, 1.0);
 
-    vec3 c1 = u_c1;
-    vec3 c2 = u_c2;
-    if(n > 1.0) {
-        c1 = u_c2;
-        c2 = u_c3;
-    }
-    if(n > 2.0) {
-        c1 = u_c3;
-        c2 = u_c4;
-    }
-    if(n > 3.0) {
-        c1 = u_c4;
-        c2 = u_c5;
-    }
-    if(n > 4.0) {
-        c1 = u_c5;
-        c2 = u_c6;
-    }
-    if(n > 5.0) {
-        c1 = u_c6;
-        c2 = u_c7;
-    }
-    if(n > 6.0) {
-        c1 = u_c7;
-        c2 = u_c1;
-    }
-
-    float fract = mod(n, 1.0);
-
-    vec3 col = mix(c1, c2, fract);
+    // vec3 col = mix(c1, c2, c);
+    vec3 col = palette(n);
 
     gl_FragColor = vec4(col, 1.0);
+
+    #include <colorspace_fragment>
 
 }

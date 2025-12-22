@@ -91,7 +91,9 @@ onMounted(() => {
             const preset = props.presets?.[+value] ?? defaultPreset
             for (const key in props.uniforms) {
                 const uniform = props.uniforms[key]
-                const newValue = preset[key]
+                // let newValue = preset[key]
+                // if (newValue === undefined) newValue = defaultPreset[key]
+                const newValue = preset[key] ?? defaultPreset[key]
                 if (isColorProp(uniform)) {
                     props.material.uniforms[key].value = new THREE.Color(newValue)
                 } else if (isVec2Prop(uniform)) {
@@ -110,9 +112,8 @@ onMounted(() => {
             gui.add(presetsObj, 'preset', ['default', ...props.presets.map((_, i) => i)])
                 .name('Presets')
                 .onChange((value: string) => setPreset(value))
-        } else {
-            gui.add({ reset: () => setPreset('default') }, 'reset')
         }
+        gui.add({ reset: () => setPreset('default') }, 'reset')
     }
 
     if (sizesRef.value) {

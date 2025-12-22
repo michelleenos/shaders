@@ -17,10 +17,10 @@ uniform float u_outerEdge1;
 uniform float u_outerEdge2;
 uniform float u_outerMult;
 uniform float u_outerSize;
-uniform float u_innerFreqBig;
-uniform float u_innerFreqSmall;
-uniform float u_innerSpeedBig;
-uniform float u_innerSpeedSmall;
+uniform float u_innerFreq1;
+uniform float u_innerFreq2;
+uniform float u_innerSpeed1;
+uniform float u_innerSpeed2;
 uniform float u_innerOffset;
 uniform float u_innerMult;
 
@@ -53,12 +53,12 @@ void main() {
   outr *= u_outerSize;
 
   float inr = 1.0;
-    // inr = sin(angle * 10.0 - u_time * u_innerSpeedBig);
-  inr = sin(angle * u_innerFreqBig - u_time * u_innerSpeedBig);
+    // inr = sin(angle * 10.0 - u_time * u_innerSpeed1);
+  inr = sin(angle * u_innerFreq1 - u_time * u_innerSpeed1);
   //   inr *= 0.05;
   inr *= u_innerMult;
   //   inr *= cos(angle * 5.0 - u_time * 7.0);
-  inr *= cos(angle * u_innerFreqSmall - u_time * u_innerSpeedSmall);
+  inr *= cos(angle * u_innerFreq2 - u_time * u_innerSpeed2);
   inr += u_innerOffset; // 0.45
 
   outr = smoothstep(outr, outr + 0.01, r);

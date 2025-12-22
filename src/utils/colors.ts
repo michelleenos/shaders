@@ -46,6 +46,8 @@ export const COLORS = {
 
     red: new THREE.Color('#e34141'),
 
+    rose: new THREE.Color('#d90368'),
+
     // were originally for shapes-nosie.glsl
     lightPurple: new THREE.Color('#e1c1c5'),
     plum: new THREE.Color('#704855'),

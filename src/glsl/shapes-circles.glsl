@@ -6,6 +6,13 @@ uniform vec2 u_mouse;
 uniform vec2 u_resolution;
 uniform float u_time;
 
+uniform vec3 u_colorBg;
+uniform vec3 u_color1;
+uniform vec3 u_color2;
+uniform vec3 u_color3;
+
+uniform float u_tile;
+
 #define PI 3.14159265358979323846
 
 // float map (float value, float inmin, float inmax, float outmin, float outmax) {
@@ -25,32 +32,6 @@ vec2 rotate2d(vec2 _st, float _angle) {
   return _st;
 }
 
-// vec2 tile(vec2 _st, float _zoom) {
-//   _st *= _zoom;
-//   return fract(_st);
-// }
-
-// float line(vec2 _st) {
-//   float edge1 = step(0.000, _st.x);
-//   float edge2 = step(0.002, _st.x);
-//   float line = edge1 - edge2;
-
-//   return line;
-// }
-
-// float rect(vec2 _st, vec2 size, float smoothness) {
-//   float edgex = (1.0 - size.x) * 0.5;
-//   float edgey = (1.0 - size.y) * 0.5;
-//   float smhalf = smoothness * 0.5;
-
-//   float bottom = smoothstep(edgey - smhalf, edgey + smhalf, _st.y);
-//   float top = smoothstep(edgey - smhalf, edgey + smhalf, 1.0 - _st.y);
-//   float left = smoothstep(edgex - smhalf, edgex + smhalf, _st.x);
-//   float right = smoothstep(edgex - smhalf, edgex + smhalf, 1.0 - _st.x);
-
-//   return top * bottom * left * right;
-// }
-
 float circle(vec2 _st, float _radius, float _smoothness) {
   float dist = distance(_st, vec2(0.5));
   return smoothstep(_radius + _smoothness * 0.5, _radius - _smoothness * 0.5, dist);
@@ -58,7 +39,9 @@ float circle(vec2 _st, float _radius, float _smoothness) {
 
 float pattern1(vec2 _st, float tile) {
   _st *= tile;
-  _st += vec2(0.02 * floor(_st.x) * sin(u_time), -0.01 * floor(_st.y) * cos(u_time * 2.0));
+  // _st += vec2(floor(_st.x) + sin(u_time - _st.x) * 0.02, -0.01 * cos(_st.x + 5.0 + u_time * 4.0));
+  _st += vec2(0.02 * floor(_st.x) * cos(u_time * 0.5), -0.01 * floor(1.0 - _st.y) * cos(u_time * 0.8));
+
   _st = fract(_st);
   float circ = circle(_st, 0.35, 0.01);
   return circ;
@@ -83,16 +66,18 @@ void main() {
   vec2 st = gl_FragCoord.xy / u_resolution.xy;
   // st = rotate2d(st, u_time * 0.1);
   vec3 color = vec3(0.0);
-  float tile = 7.0;
+  float tile = u_tile;
 
   float p1 = pattern1(st, tile);
-  color = mix(indigo, peach, p1);
+  color = mix(u_colorBg, u_color1, p1);
 
   float p2 = pattern2(st, tile);
-  color = mix(color, rose, p2 * p1);
+  color = mix(color, u_color2, p2 * p1);
 
   float p3 = pattern3(st, tile);
-  color = mix(color, orange, p3);
+  color = mix(color, u_color3, p3);
 
   gl_FragColor = vec4(color, 1.0);
+
+  #include <colorspace_fragment>
 }

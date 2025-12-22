@@ -103,6 +103,19 @@ const shaderInfo: ShaderInfo<typeof uniforms> = {
             u_gValStart: -0.61,
             u_bValStart: 0.93,
         },
+        {
+            u_iterations: 9,
+            u_rotation1: -7.5,
+            u_rotation2: 1,
+            u_zval: -5,
+            u_qmult: 7.6,
+            u_quvx: -5.3,
+            u_quvy: -2,
+            u_wavey: 5,
+            u_wavex: 9,
+            u_multd: 0,
+            u_extrarotation: false,
+        },
     ],
 }
 

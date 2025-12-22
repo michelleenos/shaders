@@ -6,6 +6,16 @@ uniform vec2 u_viewport;
 uniform float u_time;
 uniform float u_pr;
 
+// https://dev.thi.ng/gradients/
+vec3 palette(float t) {
+	vec3 a = vec3(0.25, 0.65, 1.0);
+	vec3 b = vec3(0.2, 0.25, 0.1);
+	vec3 c = vec3(0.25, 0.65, 0.3);
+	vec3 d = vec3(0.5, 2.0, 1.0);
+
+	return a + b * cos(6.28318 * (c * t + d));
+}
+
 float random(in float x) {
 	return fract(sin(x) * 1e4);
 }
@@ -46,9 +56,10 @@ void main() {
 	float angle = noise(vec2(st.x * 10.0, st.y * 10.0)) * PI;
 	st *= rotate2d(angle);
 
-	float d = noise(st * vec2(50.0, 50.0) + u_time);
+	float d = noise(st * vec2(40.0) + u_time);
+	vec3 col = palette(d);
 
-	gl_FragColor = vec4(vec3(d), 1.0);
+	gl_FragColor = vec4(col, 1.0);
 
 	#include <colorspace_fragment>
 	#include <tonemapping_fragment>

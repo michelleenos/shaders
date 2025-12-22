@@ -44,12 +44,11 @@ void main() {
 	// float sx = map(st.x, 0.4, 0.7, 0.0, 1.0);
 	float sx = st.x > 0.4 && st.x < 0.7 ? map(st.x, 0.4, 0.7, 0.0, 1.0) : 0.0;
 	sx += st.x > 0.7 ? map(st.x, 0.7, 1.0, 1.0, 0.0) : 0.0;
-	// float sx = map(st.x, 0.5, 0.8, 0.0, 1.0);
 	float sy = 1.0 - abs(0.5 - st.y) * 2.0;
 	sy = smoothstep(0.0, 1.0, sy);
 	sx = smoothstep(0.0, 1.0, sx);
 	float strength = sx * sy;
-	// strength = smoothstep(0.0, 1.0, strength);
+	strength = smoothstep(0.0, 1.0, strength);
 
 	coord.x += cnoise(vec2(st.y, u_time)) * 90.0 * strength;
 	// coord.x += sin(st.y + u_time) * 90.0 * strength;
