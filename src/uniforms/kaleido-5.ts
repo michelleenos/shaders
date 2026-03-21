@@ -110,6 +110,18 @@ const shaderInfo: ShaderInfo<typeof uniforms> = {
             u_doFractAtEnd: 1,
             u_doMinAbsAtEnd: 1,
         },
+        {
+            u_speedColor: 0,
+            u_speedLines: 0.78,
+            u_fractAmt: 2,
+            u_multCos: 3.1,
+            u_multSin: 17.8,
+            u_divBy: 0.8,
+            u_divTop: 0.935,
+            u_pow: 1,
+            u_doFractAtEnd: 1,
+            u_doMinAbsAtEnd: 1,
+        },
     ],
 }
 

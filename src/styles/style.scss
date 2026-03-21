@@ -60,6 +60,7 @@
     --topbar-bg: var(--gray-900);
     --bottombar-bg: var(--gray-900);
     --main-bg: var(--gray-950);
+    --main-text: var(--gray-50);
 
     --topbar-color: var(--gray-100);
 
@@ -81,11 +82,11 @@
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
-    color: #fff;
 }
 
 .theme-light {
     --main-bg: var(--gray-lightest);
+    --main-text: var(--gray-950);
 
     --bottombar-bg: var(--gray-50);
     --bottombar-border: var(--gray-300);
@@ -188,6 +189,7 @@ body {
 
 .app-wrapper {
     background: var(--main-bg);
+    color: var(--main-text);
 }
 
 #app {

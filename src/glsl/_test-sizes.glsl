@@ -8,7 +8,7 @@ uniform float u_pr;
 
 varying vec4 vModelPosition;
 varying vec4 vProjectionPosition;
-varying vec2 vPosition;
+varying vec3 vPosition;
 
 varying vec2 vUv;
 

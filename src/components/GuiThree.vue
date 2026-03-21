@@ -8,8 +8,11 @@ import {
     isColorProp,
     isVec2Prop,
     isNumberProp,
+    isVec3Prop,
+    isEaseProp,
 } from '../types/uniforms'
 import { onUnmounted, onMounted, ref, watch } from 'vue'
+import { easeMap } from '../utils/easings'
 
 let gui: GUI
 interface Props {
@@ -44,7 +47,7 @@ watch(
             sizesRef.value = undefined
         }
     },
-    { deep: true }
+    { deep: true },
 )
 
 watch(sizesRef, (newSizes) => emits('update:sizes', newSizes), { deep: true })
@@ -61,16 +64,19 @@ onMounted(() => {
 
     if (props.uniforms) {
         const defaultPreset: UniformsPreset<keyof typeof props.uniforms> = {}
+        const uniformsDebg: { [key: string]: string } = {}
         for (const key in props.uniforms) {
             const uniform = props.uniforms[key]
             defaultPreset[key] = uniform.value
             if (uniform.hide) continue
 
             if (isColorProp(uniform)) {
-                const debg = {
-                    color: uniform.value.getHexString(),
-                }
-                gui.addColor(debg, 'color')
+                uniformsDebg[key] = uniform.value.getStyle()
+                // const debg = {
+                //     color: uniform.value.getHexString(),
+                // }
+                defaultPreset[key] = new THREE.Color().copy(uniform.value)
+                gui.addColor(uniformsDebg, key)
                     .name(key)
                     .onChange((value: string) => {
                         props.material.uniforms[key].value.set(value)
@@ -78,11 +84,19 @@ onMounted(() => {
             } else if (isVec2Prop(uniform)) {
                 const { min = 0, max = 1, step = 0.01 } = uniform
                 gui.add(props.material.uniforms[key].value, 'x', min, max, step).name(`${key}.x`)
-
                 gui.add(props.material.uniforms[key].value, 'y', min, max, step).name(`${key}.y`)
+                defaultPreset[key] = new THREE.Vector2().copy(uniform.value)
+            } else if (isVec3Prop(uniform)) {
+                const { min = 0, max = 1, step = 0.01 } = uniform
+                gui.add(props.material.uniforms[key].value, 'x', min, max, step).name(`${key}.x`)
+                gui.add(props.material.uniforms[key].value, 'y', min, max, step).name(`${key}.y`)
+                gui.add(props.material.uniforms[key].value, 'z', min, max, step).name(`${key}.z`)
+                defaultPreset[key] = new THREE.Vector3().copy(uniform.value)
             } else if (isNumberProp(uniform)) {
                 const { min = 0, max = 1, step = 0.01 } = uniform
                 gui.add(props.material.uniforms[key], 'value', min, max, step).name(key)
+            } else if (isEaseProp(uniform)) {
+                gui.add(props.material.uniforms[key], 'value', easeMap).name(key)
             } else {
                 gui.add(props.material.uniforms[key], 'value').name(key)
             }
@@ -91,13 +105,12 @@ onMounted(() => {
             const preset = props.presets?.[+value] ?? defaultPreset
             for (const key in props.uniforms) {
                 const uniform = props.uniforms[key]
-                // let newValue = preset[key]
-                // if (newValue === undefined) newValue = defaultPreset[key]
                 const newValue = preset[key] ?? defaultPreset[key]
                 if (isColorProp(uniform)) {
-                    props.material.uniforms[key].value = new THREE.Color(newValue)
-                } else if (isVec2Prop(uniform)) {
-                    props.material.uniforms[key].value = new THREE.Vector2(newValue.x, newValue.y)
+                    props.material.uniforms[key].value.copy(newValue)
+                    uniformsDebg[key] = newValue.getStyle()
+                } else if (isVec2Prop(uniform) || isVec3Prop(uniform)) {
+                    props.material.uniforms[key].value.copy(newValue)
                 } else {
                     props.material.uniforms[key].value = newValue
                 }

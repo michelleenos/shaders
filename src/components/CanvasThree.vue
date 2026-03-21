@@ -3,18 +3,19 @@ import GuiThree from './GuiThree.vue'
 import * as THREE from 'three'
 import { useRoute } from 'vue-router'
 import { ref, type Ref, onMounted, onUnmounted, watchEffect, watch } from 'vue'
-import { Uniforms, ShaderInfo } from '../types/uniforms'
+import { Uniforms, ShaderInfo, isEaseProp } from '../types/uniforms'
 import { useMouseInElement } from '@vueuse/core'
 import { cleanupUniforms, findShaderError } from '../utils/three-utils'
+import { easeMap } from '../utils/easings'
 
 const vertexShader = `
-    varying vec2 vPosition;
+    varying vec3 vPosition;
     varying vec2 vUv;
     varying vec4 vViewPosition;
     varying vec4 vModelPosition;
     varying vec4 vProjectionPosition;
     void main() {
-        vPosition = position.xy;
+        vPosition = position;
         vUv = uv;
 
         vec4 modelPosition = modelMatrix * vec4(position, 1.0);
@@ -58,7 +59,7 @@ const shaderErrorContent: Ref<string | null> = ref(null)
 const {
     elementX: mouseX,
     elementY: mouseY,
-    elementWidth: _canvasWidth,
+    elementWidth: canvasWidth,
     elementHeight: canvasHeight,
 } = useMouseInElement(canvas)
 
@@ -177,7 +178,7 @@ watch(
         const { x, y } = value
         updateSizes(x, y)
     },
-    { deep: true }
+    { deep: true },
 )
 
 const planeToCanvasSize = () => {
@@ -234,6 +235,8 @@ const setAllUniforms = () => {
         if (!uniforms.value || !shaderMaterial.value) return
         if (uniforms.value[key] instanceof THREE.Color) {
             shaderMaterial.value.uniforms[key] = { value: uniforms.value[key] }
+        } else if (isEaseProp(uniforms.value[key])) {
+            shaderMaterial.value.uniforms[key] = { value: easeMap[uniforms.value[key].value] }
         } else {
             shaderMaterial.value.uniforms[key] = { value: uniforms.value[key].value }
         }
@@ -262,8 +265,9 @@ const tick = () => {
 
     const elapsed = clock.value.getElapsedTime()
     shaderMaterial.value.uniforms.u_time.value = elapsed
-    shaderMaterial.value.uniforms.u_mouse.value.x = mouseX
-    shaderMaterial.value.uniforms.u_mouse.value.y = canvasHeight.value - mouseY.value
+    shaderMaterial.value.uniforms.u_mouse.value.x = mouseX.value / canvasWidth.value
+    shaderMaterial.value.uniforms.u_mouse.value.y =
+        (canvasHeight.value - mouseY.value) / canvasHeight.value
     renderer.value.render(scene, camera.value)
     animation.value = window.requestAnimationFrame(tick)
 }

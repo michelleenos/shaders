@@ -61,9 +61,9 @@ const uniforms = {
         max: 3,
         step: 0.01,
     },
-    u_extrarotation: {
-        value: true,
-    },
+    // u_extrarotation: {
+    //     value: true,
+    // },
     u_rValStart: {
         value: 0.5,
         min: -3,
@@ -98,7 +98,6 @@ const shaderInfo: ShaderInfo<typeof uniforms> = {
             u_wavey: 0,
             u_wavex: 0,
             u_multd: 3,
-            u_extrarotation: false,
             u_rValStart: -1.2,
             u_gValStart: -0.61,
             u_bValStart: 0.93,
@@ -114,7 +113,6 @@ const shaderInfo: ShaderInfo<typeof uniforms> = {
             u_wavey: 5,
             u_wavex: 9,
             u_multd: 0,
-            u_extrarotation: false,
         },
     ],
 }

@@ -1,14 +1,15 @@
 import { ShaderInfo, ShaderUniform } from '../types/uniforms'
 import * as THREE from 'three'
+import { COLORS } from '../utils/colors'
 
 THREE.ColorManagement.enabled = true
 
 const uniforms = {
     u_colorDark: {
-        value: new THREE.Color('#261817'),
+        value: new THREE.Color(COLORS.purpley900),
     },
     u_colorLight: {
-        value: new THREE.Color('#6b554d'),
+        value: new THREE.Color(COLORS.purpley600),
     },
     u_fizzPx: {
         value: 5,
