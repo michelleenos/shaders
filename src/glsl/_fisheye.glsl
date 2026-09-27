@@ -12,8 +12,16 @@ void main() {
 
 	vec2 st = gl_FragCoord.xy / u_resolution.xy;
 
-	vec2 mouse = vec2(0.3, 0.4);
-	mouse = u_mouse;
+	vec2 mouse = vec2(0.5, 0.5);
+
+	// vec2 p = st * 2.0 - 1.0;
+	// float r = length(p);
+
+	// float distortion = pow(r, 1.0);
+	// vec2 distortedUv = p * distortion;
+	// st = (distortedUv / 2.0) + 0.5;
+
+	// mouse = u_mouse;
 	float dist = distance(st, mouse);
 	float radius = 0.3;
 
@@ -25,7 +33,8 @@ void main() {
 
 	if (dist < radius) {
 		float r = dist / radius;
-		newDist = r * r * radius;
+		// float distortion = pow(r, 1.0);
+		newDist = pow(r, 2.0) * radius;
 		float newX = mouse.x + newDist * cos(angle);
 		float newY = mouse.y + newDist * sin(angle);
 		st.x = newX;

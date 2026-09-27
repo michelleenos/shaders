@@ -23,6 +23,8 @@ uniform float u_ambientIntensity;
 uniform vec2 u_noiseFreq;
 uniform float u_noiseScale;
 uniform float u_speed;
+uniform float u_fishEyeRadius;
+uniform bool u_fishEyeMouse;
 
 uniform float u_easeMatColor;
 
@@ -79,19 +81,23 @@ void main() {
 
 	vec2 st = gl_FragCoord.xy / u_resolution.xy;
 
-	float dist = distance(st, u_mouse);
+	if (u_fishEyeMouse) {
+		float dist = distance(st, u_mouse);
 
-	// st.x += dist * 0.1;
-	// st.y += dist * 0.1;
-	vec2 dir = st - u_mouse;
-	float angle = atan(dir.y, dir.x);
-	float factor = 0.0;
-	if (dist < 0.2) {
-		factor = 1.0 - dist / 0.2;
-		factor = smoothstep(0.0, 1.0, factor);
-		st.y += sin(angle) * factor * 0.2;
-		// st.y = smoothstep(st.y, sin(angle), dist);
-		// st.x += cos(angle) * (1.0 - dist);
+		// st.x += dist * 0.1;
+		// st.y += dist * 0.1;
+		vec2 dir = st - u_mouse;
+		float angle = atan(dir.y, dir.x);
+		float newDist = 0.0;
+		float radius = u_fishEyeRadius;
+
+		if (dist < radius) {
+			float r = dist / radius;
+			newDist = r * r * radius;
+			st.x = u_mouse.x + newDist * cos(angle);
+			st.y = u_mouse.y + newDist * sin(angle);
+		}
+
 	}
 
 	float xStep = 1.0 / u_stripes;

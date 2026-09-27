@@ -61,6 +61,15 @@ const uniforms = {
         type: 'ease',
         value: 'cubicOut',
     },
+    u_fishEyeMouse: {
+        value: false,
+    },
+    u_fishEyeRadius: {
+        value: 0.3,
+        min: 0,
+        max: 1,
+        step: 0.1,
+    },
 } satisfies { [key: string]: ShaderUniform }
 
 const shaderInfo: ShaderInfo<typeof uniforms> = { uniforms }

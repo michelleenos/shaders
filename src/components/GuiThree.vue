@@ -111,6 +111,8 @@ onMounted(() => {
                     uniformsDebg[key] = newValue.getStyle()
                 } else if (isVec2Prop(uniform) || isVec3Prop(uniform)) {
                     props.material.uniforms[key].value.copy(newValue)
+                } else if (isEaseProp(uniform)) {
+                    props.material.uniforms[key].value = easeMap[newValue as keyof typeof easeMap]
                 } else {
                     props.material.uniforms[key].value = newValue
                 }
